@@ -43,8 +43,8 @@ def r_fin(h0=0.1, r0=0.1, rho=1e3, k=40, G=50.0, dt=1e-3, N=2 * 10**3):
     x2 = (h0 / (r0 * Bn)) ** (1 / 3)
     """
 
-    El = G * R[-1] ** 3 / (rho * g * (h0 * r0) ** 2)
-    x2 = (h0 / (r0 * El)) ** (1 / 3)
+    El = G * r0 / (rho * g * h0**2)
+    x2 = (h0 / (r0 * El)) ** (1 / 6)
 
     y = R[-1] / r0 - 1
 
@@ -54,33 +54,33 @@ def r_fin(h0=0.1, r0=0.1, rho=1e3, k=40, G=50.0, dt=1e-3, N=2 * 10**3):
 ## R final pour différents k à Bn fixé, pour les deux régimes
 
 
-def h0_G(h0, El, rho=1e3, g=9.81, r0=0.1):
-    return El * rho * g * h0**2 / r0
+def fh0(G, El, rho=1e3, g=9.81, r0=0.1):
+    return (G * r0 / (rho * g * El)) ** (1 / 2)
 
 
-H0 = [0.05, 0.1, 0.15, 0.5, 1.0]
-Sim_visc = np.zeros((len(H0), 4))
-Sim_elas = np.zeros((len(H0), 4))
+Glist = [5, 10, 20, 35, 55, 100]
+Sim_visc = np.zeros((len(Glist), 4))
+Sim_elas = np.zeros((len(Glist), 4))
 
-for n, h0 in enumerate(H0):
-    Sim_visc[n] = r_fin(h0=h0, G=h0_G(h0, 0.03))
-    Sim_elas[n] = r_fin(h0=h0, G=h0_G(h0, 0.3))
+for n, G in enumerate(Glist):
+    Sim_visc[n] = r_fin(G=G, h0=fh0(G, 0.01))
+    Sim_elas[n] = r_fin(G=G, h0=fh0(G, 0.1))
 
 
 print(Sim_visc, Sim_elas)
 
 plt.figure()
-plt.subplot(1, 3, 1)
-plt.scatter(Sim_visc[:, 0], Sim_visc[:, 3])
-plt.title("Bn=0.003, régime visqueux")
+plt.subplot(1, 2, 1)
+plt.scatter(Sim_visc[:, 0], Sim_visc[:, 2])
+plt.title("El=0.003, régime visqueux")
 plt.xlabel("(Ga * h0 / r0) ** (1 / 5)")
 plt.ylabel("r_fin/r0 - 1")
 plt.grid()
 
-plt.subplot(1, 3, 2)
-plt.scatter(Sim_elas[:, 2], Sim_elas[:, 3])
-plt.title("Bn=0.3, régime élastique")
-plt.xlabel("(h0 / (r0 * El)) ** (1 / 3)")
+plt.subplot(1, 2, 2)
+plt.scatter(Sim_elas[:, 1], Sim_elas[:, 2])
+plt.title("El=0.3, régime élastique")
+plt.xlabel("(h0 / (r0 * El)) ** (1 / 6)")
 plt.ylabel("r_fin/r0 - 1")
 plt.grid()
 plt.show()
