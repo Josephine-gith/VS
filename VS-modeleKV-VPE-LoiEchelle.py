@@ -6,11 +6,14 @@ import matplotlib.pyplot as plt
 # Modèle de Kelvin Voigt
 
 
-def r_fin(h0=0.1, r0=0.1, rho=1.0e3, k=40.0, tau0=15.0, G=1.0e2, dt=1e-4, N=10**5):
+def r_fin(
+    h0=0.1, r0=0.1, rho=1.0e3, k=40.0, tau0=15.0, G=1.0e2, Di=0.2, m=1, dt=1e-4, N=10**5
+):
     M = 0  # car dam break sans compression supplémentaire
     sigma = 0  # négligé
 
     g = 9.81  # m/s2
+    eta = Di * tau0 * (g / h0) ** (1 / 2)
 
     # Initialisation
     R = np.zeros(N + 1)
@@ -21,15 +24,16 @@ def r_fin(h0=0.1, r0=0.1, rho=1.0e3, k=40.0, tau0=15.0, G=1.0e2, dt=1e-4, N=10**
     # Itération
     for i in range(N):
         R[i + 1] = dt * U[i] + R[i]
+        gamma_p = U[i] * (R[i] / r0) ** 2 / h0
         tauT = (
-            k * U[i] * (R[i] / r0) ** 2 / h0
+            (k + eta) * abs(gamma_p) ** m * np.sign(gamma_p)
             + tau0
             + G * Gamma[i]
             - rho * g * h0 * (r0 / R[i]) ** 2
             - M * g / (np.pi * R[i])
             + sigma * r0 * (r0 / R[i] - 1)
         )
-        Gamma[i + 1] = dt * U[i] * (R[i] / r0) ** 2 / h0 + Gamma[i]
+        Gamma[i + 1] = dt * gamma_p + Gamma[i]
         U[i + 1] = -dt * (R[i] / r0) ** 2 / (rho * h0) * tauT + U[i]
 
     # Sortie
@@ -50,6 +54,8 @@ def r_fin(h0=0.1, r0=0.1, rho=1.0e3, k=40.0, tau0=15.0, G=1.0e2, dt=1e-4, N=10**
     # Trace R(t)
     T = dt * np.arange(N + 1)
     plt.plot(T, R)
+    plt.title('R(t)')
+    plt.grid()
     plt.show()
     """
     return x1, x2, x3, y1, y2, U[-1]
@@ -77,6 +83,7 @@ def fixe_El(h0, El, r0=0.1, rho=1e3, g=9.81):
 
 # Simulations pour chaque régime
 H0 = [0.05, 0.1, 0.25, 0.3, 0.50, 0.65, 0.8, 1.0]
+# H0 = [0.25]
 Sim_visc = np.zeros((len(H0), 6))
 Sim_plas = np.zeros((len(H0), 6))
 Sim_elas = np.zeros((len(H0), 6))
@@ -100,7 +107,7 @@ plt.ylabel("r_fin/r0 - 1")
 plt.grid()
 
 plt.subplot(1, 3, 2)
-plt.scatter(Sim_plas[:, 1], Sim_plas[:, 4])
+plt.scatter(Sim_plas[:, 1], Sim_plas[:, 3])
 plt.title("Régime plastique (k=1e-3 - El=1e-6)")
 plt.xlabel("(h0 / (r0 * Bn)) ** (1 / 3)")
 plt.ylabel("r_fin/r0 - 1")

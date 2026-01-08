@@ -4,8 +4,10 @@ import matplotlib.pyplot as plt
 ## Modèle de Kelvin Voigt
 
 # Temps final N*dt
-N = 2 * 10**3  # Nombre d'itérations
+N = 10**4  # Nombre d'itérations
 dt = 1e-3  # Pas de temps, en sec
+
+Di = 0.2  # Nombre de dissipation
 
 # Paramètres de l'expérience
 h0 = 0.1  # m
@@ -15,11 +17,14 @@ M = 0.05  # kg
 # Propriétés du matériau
 rho = 1e3  # kg/m3
 k = 40  # Pa.s
-G = 100  # Pa
-tau0 = 15  # Pa
+G = 50  # Pa
+tau0 = 30  # Pa
 sigma = 5e-2  # Pa.m
+m = 1
 
 g = 9.81  # m/s2
+
+eta = Di * tau0 * (g / h0) ** (1 / 2)
 
 # Initialisation
 R = np.zeros(N + 1)
@@ -30,15 +35,16 @@ Gamma = np.zeros(N + 1)
 # Itération
 for i in range(N):
     R[i + 1] = dt * U[i] + R[i]
+    gamma_p = U[i] * (R[i] / r0) ** 2 / h0
     tauT = (
-        k * U[i] * (R[i] / r0) ** 2 / h0
+        (k + eta) * abs(gamma_p) ** m * np.sign(gamma_p)
         + tau0
         + G * Gamma[i]
         - rho * g * h0 * (r0 / R[i]) ** 2
         - M * g / (np.pi * R[i])
         + sigma * r0 * (r0 / R[i] - 1)
     )
-    Gamma[i + 1] = dt * U[i] * (R[i] / r0) ** 2 / h0 + Gamma[i]
+    Gamma[i + 1] = dt * gamma_p + Gamma[i]
     U[i + 1] = -dt * (R[i] / r0) ** 2 / (rho * h0) * tauT + U[i]
 
 # Sortie
