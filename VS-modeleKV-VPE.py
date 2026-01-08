@@ -83,7 +83,7 @@ Sim_elas = np.zeros((len(H0), 6))
 
 for i, h0 in enumerate(H0):
     Sim_visc[i] = r_fin(h0=h0, k=50, tau0=fixe_Bn(h0, 1e-6), G=fixe_El(h0, 1e-6))
-    Sim_plas[i] = r_fin(h0=h0, tau0=20, k=1e-6, G=fixe_El(h0, 1e-6), N=10**6)
+    Sim_plas[i] = r_fin(h0=h0, tau0=20, k=1e-6, G=fixe_El(h0, 1e-10), N=10**6)
     Sim_elas[i] = r_fin(h0=h0, G=300, tau0=fixe_Bn(h0, 1e-6), k=1e-8, N=10**5)
 
 print(
