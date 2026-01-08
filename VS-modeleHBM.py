@@ -33,13 +33,6 @@ Gamma_rev = np.zeros(N + 1)
 # Itération
 for i in range(N):
     R[i + 1] = dt * U[i] + R[i]
-    tauT = (
-        G * Gamma_rev[i]
-        - rho * g * h0 * (r0 / R[i]) ** 2
-        - M * g / (np.pi * R[i])
-        + sigma * r0 * (r0 / R[i] - 1)
-    )
-    U[i + 1] = -dt * (R[i] / r0) ** 2 / (rho * h0) * tauT + U[i]
     Gamma_rev[i + 1] = (
         dt
         * (
@@ -50,6 +43,14 @@ for i in range(N):
         )
         + Gamma_rev[i]
     )
+    tauT = (
+        G * Gamma_rev[i]
+        - rho * g * h0 * (r0 / R[i]) ** 2
+        - M * g / (np.pi * R[i])
+        + sigma * r0 * (r0 / R[i] - 1)
+    )
+    U[i + 1] = -dt * (R[i] / r0) ** 2 / (rho * h0) * tauT + U[i]
+
 
 # Sortie
 print(f"Le rayon au bout de {N * dt}s est {R[N]:.4f} m.")
