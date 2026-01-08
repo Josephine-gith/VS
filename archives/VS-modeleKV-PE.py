@@ -2,12 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 ## Régimes plastique et élastique
-k = 40
+k = 10
 
 # Modèle de Kelvin Voigt
 
 
-def r_fin(h0=0.1, r0=0.1, rho=1e3, tau0 = 15., G=50.0, dt=1e-3, N=2 * 10**3):
+def r_fin(h0=0.1, r0=0.1, rho=1e3, tau0=15.0, G=50.0, dt=1e-3, N=2 * 10**3):
     M = 0  # car dam break sans compression supplémentaire
     sigma = 0  # négligé
 
@@ -46,6 +46,7 @@ def r_fin(h0=0.1, r0=0.1, rho=1e3, tau0 = 15., G=50.0, dt=1e-3, N=2 * 10**3):
 
 
 # R final pour différents tau0 à Bn fixé, pour les deux régimes
+
 
 def fh0(tau0, Bn, rho=1e3, g=9.81):
     return tau0 / (rho * g * Bn)

@@ -7,7 +7,7 @@ G = 0
 # Modèle de Kelvin Voigt
 
 
-def r_fin(h0=1.0, r0=0.1, rho=1e3, k=40, tau0=15, dt=1e-4, N=10**5):
+def r_fin(h0=0.1, r0=0.1, rho=1.0e3, k=40.0, tau0=15.0, dt=1e-4, N=10**5):
     M = 0  # car dam break sans compression supplémentaire
     sigma = 0  # négligé
 
@@ -49,17 +49,21 @@ def r_fin(h0=1.0, r0=0.1, rho=1e3, k=40, tau0=15, dt=1e-4, N=10**5):
 ## R final pour différents tau0 à Bn fixé, pour les deux régimes
 
 
-def fh0(tau0, Bn, rho=1e3, g=9.81):
-    return tau0 / (rho * g * Bn)
+def fixe_Bn(h0, Bn, rho=1e3, g=9.81):
+    return Bn * rho * g * h0
 
 
-Tau0 = [5, 10, 20, 35, 55, 100]
-Sim_visc = np.zeros((len(Tau0), 4))
-Sim_plas = np.zeros((len(Tau0), 4))
+def fixe_Ga(h0, Ga, rho=1e3, g=9.81, uc=1):  # QUELLE VAL DE UC ??????????
+    return rho * g * h0**2 / (uc * Ga)
 
-for i, tau0 in enumerate(Tau0):
-    Sim_visc[i] = r_fin(tau0=tau0, h0=fh0(tau0, 0.003))
-    Sim_plas[i] = r_fin(tau0=tau0, h0=fh0(tau0, 0.3))
+
+H0 = [0.05, 0.1, 0.3, 0.8, 1.0]
+Sim_visc = np.zeros((len(H0), 4))
+Sim_plas = np.zeros((len(H0), 4))
+
+for i, h0 in enumerate(H0):
+    Sim_visc[i] = r_fin(h0=h0, tau0=fixe_Bn(h0, 0.003), k=50)
+    Sim_plas[i] = r_fin(h0=h0, k=fixe_Ga(h0, 10), tau0=1)
 
 print(Sim_visc, Sim_plas)
 
@@ -72,7 +76,7 @@ plt.ylabel("r_fin/r0 - 1")
 plt.grid()
 plt.subplot(1, 2, 2)
 plt.scatter(Sim_plas[:, 1], Sim_plas[:, 2])
-plt.title("Bn=0.3, régime plastique")
+plt.title("Ga=50, régime plastique")
 plt.xlabel("(h0 / (r0 * Bn)) ** (1 / 3)")
 plt.ylabel("r_fin/r0 - 1")
 plt.grid()

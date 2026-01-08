@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 ## Régimes visqueux et élastique
-tau0 = 0
+tau0 = 10
 
 # Modèle de Kelvin Voigt
 
