@@ -68,4 +68,5 @@ plt.plot(T, Gamma, label="gamma(t)")
 plt.title("gamma(t)")
 plt.grid()
 
+plt.tight_layout()
 plt.show()

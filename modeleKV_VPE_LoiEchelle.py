@@ -120,4 +120,5 @@ plt.xlabel("(h0 / (r0 * El)) ** (1 / 6)")
 plt.ylabel("r_max/r0 - 1")
 plt.grid()
 
+plt.tight_layout()
 plt.show()

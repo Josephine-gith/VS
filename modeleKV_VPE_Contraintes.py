@@ -97,4 +97,6 @@ plt.suptitle("Contribution de chaque contrainte, normalisée par le poids")
 fig.supxlabel("Temps (en sec)")
 fig.supylabel("Contrainte / tauPoids")
 fig.legend()
+
+plt.tight_layout()
 plt.show()

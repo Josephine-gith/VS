@@ -73,5 +73,5 @@ plt.plot(T, Gamma_rev, label="gamma_rev(t)")
 plt.title("gamma_rev(t)")
 plt.grid()
 
-
+plt.tight_layout()
 plt.show()

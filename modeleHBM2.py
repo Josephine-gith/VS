@@ -125,6 +125,7 @@ plt.plot(T, E)
 plt.title("Énergie totale (décroissante)")
 plt.grid()
 
+plt.tight_layout()
 plt.show()
 
 print(f"Rayon final : {R[-1]:.4f} m")
