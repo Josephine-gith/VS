@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 ## Modèle de Kelvin Voigt
 
 
-def r_fin(h0=0.1, r0=0.1, rho=1.0e3, k=40.0, tau0=30.0, G=50.0, Di=0.2, m=1, dt=1e-4, N=10**5):
+def r_fin(
+    h0=0.1, r0=0.1, rho=1.0e3, k=40.0, tau0=30.0, G=50.0, Di=0.2, m=1, dt=1e-4, N=10**5
+):
     M = 0  # car dam break sans compression supplémentaire
     sigma = 0  # négligé
 
@@ -26,7 +28,7 @@ def r_fin(h0=0.1, r0=0.1, rho=1.0e3, k=40.0, tau0=30.0, G=50.0, Di=0.2, m=1, dt=
     tauDi = 0
     tauT = tauVisc + tau0 + tauElas + tauPoids + tauComp + tauCapi + tauDi
     Contraintes[0, :] = np.array(
-        (tauVisc, tau0, tauElas, -tauComp, tauCapi, tauDi, tauT)
+        (tauVisc, tau0, tauElas, -tauComp, tauCapi, tauDi, -tauT)
     ) / abs(tauPoids)
 
     # Itération
@@ -40,9 +42,9 @@ def r_fin(h0=0.1, r0=0.1, rho=1.0e3, k=40.0, tau0=30.0, G=50.0, Di=0.2, m=1, dt=
         tauComp = -M * g / (np.pi * R[i])
         tauCapi = sigma * r0 * (r0 / R[i] - 1)
         tauDi = eta * gamma_p
-        tauT = tauVisc + tau0 + tauElas + tauPoids + tauComp + tauCapi +tauDi
+        tauT = tauVisc + tau0 + tauElas + tauPoids + tauComp + tauCapi + tauDi
         Contraintes[i + 1, :] = np.array(
-            (tauVisc, tau0, tauElas, -tauComp, tauCapi, tauDi, tauT)
+            (tauVisc, tau0, tauElas, -tauComp, tauCapi, tauDi, -tauT)
         ) / abs(tauPoids)
 
         Gamma[i + 1] = dt * gamma_p + Gamma[i]
@@ -72,23 +74,23 @@ Contraintes_leg = [
     "Total (= inertie)",
 ]
 
-fig, axs = plt.subplots(2,2)
+fig, axs = plt.subplots(2, 2)
 
 plt.subplot(221)
 plt.plot(Sim_visc[0], Sim_visc[1])
-plt.title('Régime visqueux')
+plt.title("Régime visqueux")
 plt.grid()
 plt.subplot(222)
 plt.plot(Sim_plas[0], Sim_plas[1])
-plt.title('Régime plastique')
+plt.title("Régime plastique")
 plt.grid()
 plt.subplot(223)
 plt.plot(Sim_elas[0], Sim_elas[1])
-plt.title('Régime élastique')
+plt.title("Régime élastique")
 plt.grid()
 plt.subplot(224)
 plt.plot(Sim_mixt[0], Sim_mixt[1], label=Contraintes_leg)
-plt.title('Régime mixte')
+plt.title("Régime mixte")
 plt.grid()
 
 plt.suptitle("Contribution de chaque contrainte, normalisée par le poids")
