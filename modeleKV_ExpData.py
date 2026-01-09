@@ -1,20 +1,70 @@
 import matplotlib.pyplot as plt
+import itertools
 
 from ExpData_Df import df_exp
 from modeleKV_solve import modeleKV_solve
 
-df_final = df_exp.copy()
 
-df_final["1 - h_inf/h0 KV"] = df_exp.apply(
+# Préparation des données
+
+df_exp["h_inf/h0"] = 1 - df_exp["1 - h_inf/h0"]
+df_exp["Uc/Ucr"] = (-1 + 1 / df_exp["Bn"]) * (
+    df_exp["h0 [m]"] / (df_exp["Bn"] * df_exp["r0 [m]"])
+) ** (2 / 3)
+
+df = df_exp.copy()
+df["1 - h_inf/h0 KV"] = df.apply(
     lambda r: modeleKV_solve(
-        r["h0 [m]"], r["r0 [m]"], r["r [kg/m³]"], r["k [Pa s]"], r["Bn"], G=300
+        r["h0 [m]"], r["r0 [m]"], r["r [kg/m³]"], r["k [Pa s]"], r["Bn"], a=60, G=0
     )[0],
     axis=1,
 )
+df["h_inf/h0 KV"] = 1 - df["1 - h_inf/h0 KV"]
+df["err"] = df["1 - h_inf/h0 KV"] / df["1 - h_inf/h0"] - 1
 
-df_final["err"] = df_final["1 - h_inf/h0 KV"] / df_final["1 - h_inf/h0"] - 1
 
-# print(df_final.head())
+# Styles par matériau
 
-plt.scatter(df_final["r0 [m]"] / df_final["h0 [m]"], df_final["err"])
+markers = itertools.cycle(["o", "P", "X", "s", "D", "^", "v", "*"])
+colors = itertools.cycle(plt.cm.tab10.colors)
+style = {m: (next(markers), next(colors)) for m in df["material"].unique()}
+
+
+# Graphe 1
+
+fig = plt.figure(figsize=(12, 8))
+
+ax1 = plt.subplot(121)
+for m, (mk, c) in style.items():
+    d = df[df["material"] == m]
+    ax1.plot(d["Uc/Ucr"], d["h_inf/h0 KV"], mk, color=c, label=f"Mod {m}")
+    ax1.plot(d["Uc/Ucr"], d["h_inf/h0"], mk, color=c, mfc="none", label=f"Exp {m}")
+
+ax1.set_xscale("log")
+ax1.set_xlabel("Uc/Ucr")
+ax1.set_ylabel("h_inf/h0")
+ax1.set_title("Hauteur finale normalisée exp et modèle KV")
+ax1.grid()
+
+
+# Graphe 2
+
+ax2 = plt.subplot(122)
+for m, (mk, c) in style.items():
+    d = df[df["material"] == m]
+    ax2.plot(d["Uc/Ucr"], d["err"], mk, color=c)
+
+ax2.set_xscale("log")
+ax2.set_xlabel("Uc/Ucr")
+ax2.set_ylabel("(1 - h_inf/h0)th / (1 - h_inf/h0)exp - 1")
+ax2.set_title("Erreur normalisée entre exp et modèle")
+ax2.grid()
+
+handles, labels = ax1.get_legend_handles_labels()
+handles2 = handles[::2] + handles[1::2]
+labels2 = labels[::2] + labels[1::2]
+
+fig.legend(handles2, labels2, loc="lower center", ncol=2, frameon=False)
+
+fig.subplots_adjust(bottom=0.35)
 plt.show()

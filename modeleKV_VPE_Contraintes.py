@@ -5,7 +5,16 @@ import matplotlib.pyplot as plt
 
 
 def r_fin(
-    h0=0.1, r0=0.1, rho=1.0e3, k=40.0, tau0=30.0, G=50.0, Di=0.2, m=1, dt=1e-4, N=10**5
+    h0=0.1,
+    r0=0.1,
+    rho=1.0e3,
+    k=40.0,
+    tau0=30.0,
+    G=50.0,
+    Di=0.2,
+    m=1,
+    dt=1e-4,
+    N=2 * 10**4,
 ):
     M = 0  # car dam break sans compression supplémentaire
     sigma = 0  # négligé
@@ -59,8 +68,8 @@ def r_fin(
 
 h0 = 0.25
 Sim_visc = r_fin(h0=h0, k=50, tau0=1e-6, G=1e-6)
-Sim_plas = r_fin(h0=h0, tau0=20, k=1e-6, G=1e-10, N=10**6)
-Sim_elas = r_fin(h0=h0, G=300, tau0=1e-6, k=1e-8, N=10**5)
+Sim_plas = r_fin(h0=h0, tau0=20, k=1e-6, G=1e-10)
+Sim_elas = r_fin(h0=h0, G=300, tau0=1e-6, k=1e-8)
 Sim_mixt = r_fin(h0=h0, G=50, tau0=30, k=40)
 
 
@@ -98,5 +107,5 @@ fig.supxlabel("Temps (en sec)")
 fig.supylabel("Contrainte / tauPoids")
 fig.legend()
 
-plt.tight_layout()
+
 plt.show()

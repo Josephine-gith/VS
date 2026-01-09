@@ -9,6 +9,7 @@ def modeleKV_solve(
     rho,
     k,
     Bn,
+    a=1,
     M=0,
     G=50,
     sigma=5e-2,
@@ -28,7 +29,7 @@ def modeleKV_solve(
         # Protection numérique
         R = max(R, 1e-6)
 
-        gamma_p = U * (R / r0) ** 2 / h0
+        gamma_p = a * U * (R / r0) ** 2 / h0
 
         tauT = (
             (k + eta) * np.abs(gamma_p) ** m * np.sign(gamma_p)
@@ -120,7 +121,7 @@ if __name__ == "__main__":
 
     t_final = 10.0  # N*dt = 10s
 
-    a, T, R, U, Gamma = modeleKV_solve(h0, r0, rho, k, Bn)
+    c, T, R, U, Gamma = modeleKV_solve(h0, r0, rho, k, Bn)
 
     print(f"Rayon final : {R[-1]:.4f} m")
 
