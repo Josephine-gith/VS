@@ -1,10 +1,10 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
-from ExpData_Df import final_df
+from ExpData_Df import df_exp
+
 
 def modeleKV(
-    h0, r0, rho, k, Bn, sigma=5e-2, m=1, g=9.81, G=50, M=0, Di=0.2, dt=1e-3, N=10**4
+    h0, r0, rho, k, Bn, sigma=5e-2, m=1, g=9.81, G=30, M=0, Di=1e-3, dt=1e-3, N=10**4
 ):
     tau0 = Bn * rho * g * h0
     eta = Di * tau0 * (g / h0) ** (1 / 2)
@@ -34,3 +34,14 @@ def modeleKV(
 
     return 1 - h_inf / h0
 
+
+df_final = df_exp.iloc[:10].copy()
+
+df_final["1 - h_inf/h0 KV"] = df_exp.apply(
+    lambda r: modeleKV(
+        r["h0 [m]"], r["r0 [m]"], r["r [kg/m³]"], r["k [Pa s]"], r["Bn"]
+    ),
+    axis=1,
+)
+
+print(df_final.head())

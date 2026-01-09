@@ -32,7 +32,7 @@ for sheet_name, df in sheets.items():
     dfs.append(df)
 
 # Concaténer toutes les feuilles en un seul DataFrame
-final_df = pd.concat(dfs, ignore_index=True)
+df_exp = pd.concat(dfs, ignore_index=True)
 
 # Affichage
-# print(final_df.head())
+# print(df_exp.head())
