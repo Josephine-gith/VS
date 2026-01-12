@@ -1,0 +1,156 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
+import pandas as pd
+
+
+def modeleKV_solve(
+    h0,
+    r0,
+    rho,
+    k,
+    tau0,
+    a=1,
+    M=0,
+    G=50,
+    sigma=5e-2,
+    m=1,
+    g=9.81,
+    Di=0.2,
+    t_final=10.0,
+):
+    t_eval = np.linspace(0, t_final, 1000)
+    eta = Di * tau0 * (g / h0) ** 0.5
+
+    # Système d'EDO
+    def kelvin_voigt_ode(t, y):
+        R, U, Gamma = y
+
+        # Protection numérique
+        R = max(R, 1e-6)
+
+        gamma_p = a * U * (R / r0) ** 2 / h0
+
+        tauT = (
+            (k + eta) * np.abs(gamma_p) ** m * np.sign(gamma_p)
+            + tau0
+            + G * Gamma
+            - rho * g * h0 * (r0 / R) ** 2
+            - M * g / (np.pi * R)
+            + sigma * r0 * (r0 / R - 1)
+        )
+
+        dRdt = U
+        dGammadt = gamma_p
+        dUdt = -((R / r0) ** 2) / (rho * h0) * tauT
+
+        return [dRdt, dUdt, dGammadt]
+
+    # Conditions initiales
+    y0 = [r0, 0.0, 0.0]
+
+    # Résolution
+    sol = solve_ivp(
+        kelvin_voigt_ode,
+        t_span=(0, t_final),
+        y0=y0,
+        method="BDF",  # Méthode implicite stable
+        t_eval=t_eval,
+        rtol=1e-6,
+        atol=1e-9,
+    )
+
+    R, U, Gamma = sol.y
+    T = sol.t
+
+    return T, R, U, Gamma
+
+
+# Paramètres
+
+H0 = np.array([0.05, 0.1, 0.25, 0.4, 0.65, 0.85, 1.0, 1.2, 1.7, 2., 2.45, 3., 10])
+r0 = 0.1
+M = 0.0
+
+rho = 1e3
+k = 40
+G = 0
+tau0 = 30
+sigma = 5e-2
+m = 1
+g = 9.81
+
+Di = 0.2
+Bn = tau0 / (rho * g * H0)
+xBn = (H0 / (Bn * r0)) ** (1 / 3)
+Ga = rho * g * H0 / (rho * g * H0 - tau0)
+xGa = (Ga * H0 / r0) ** (1 / 5)
+
+t_final = 10.0  # N*dt = 10s
+
+df = pd.DataFrame(
+    columns=[
+        "T",
+        "r_inf",
+        "g",
+        "rho",
+        "h0",
+        "r0",
+        "k",
+        "tau0",
+        "m",
+        "h0/r0",
+        "r_inf/r0",
+        "h_inf",
+        "h_inf/h0",
+        "Uc",
+        "Ucr",
+        "Uc/Ucr",
+        "Ga",
+        "Bn",
+        "(Ga*h0/r0)**(1/2m+3)",
+        "(1/Bn*h0/r0)**1/3",
+    ]
+)
+
+for i, h0 in enumerate(H0):
+    T, R, U, Gamma = modeleKV_solve(h0, r0, rho, k, tau0)
+    uc = h0 * (rho * g * h0 - tau0) / k
+    ucr = tau0 ** (5 / 3) * (h0 / k) / (rho * g * h0**2 / r0) ** (2 / 3)
+    df.loc[len(df)] = {
+        "T": T.tolist(),
+        "r_inf": R[-1],
+        "g": g,
+        "rho": rho,
+        "h0": h0,
+        "r0": r0,
+        "k": k,
+        "tau0": tau0,
+        "m": m,
+        "h0/r0": h0 / r0,
+        "r_inf/r0": R[-1] / r0,
+        "h_inf": h0 * (r0 / R[-1]) ** 2,
+        "h_inf/h0": (r0 / R[-1]) ** 2,
+        "Uc": uc,
+        "Ucr": ucr,
+        "Uc/Ucr": uc / ucr,
+        "Ga": Ga[i],
+        "Bn": Bn[i],
+        "(Ga*h0/r0)**(1/2m+3)": xGa[i],
+        "(1/Bn*h0/r0)**1/3": xBn[i],
+    }
+
+# Tracés
+plt.figure()
+
+plt.plot(
+    df["(1/Bn*h0/r0)**1/3"] / df["(Ga*h0/r0)**(1/2m+3)"],
+    df["r_inf/r0"] / df["(Ga*h0/r0)**(1/2m+3)"],
+)
+plt.ylabel("r_inf/r0 / (Ga*h0/r0)**(1/2m+3)")
+plt.xlabel("(1/Bn*h0/r0)**1/3  /  (Ga*h0/r0)**(1/2m+3)")
+plt.xscale("log")
+plt.grid()
+
+plt.tight_layout()
+plt.show()

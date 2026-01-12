@@ -45,7 +45,7 @@ def r_fin(
         R[i + 1] = dt * U[i] + R[i]
         gamma_p = U[i] * (R[i] / r0) ** 2 / h0
 
-        tauVisc = k * gamma_p
+        tauVisc = k * abs(gamma_p) ** m * np.sign(gamma_p)
         tauElas = G * Gamma[i]
         tauPoids = -rho * g * h0 * (r0 / R[i]) ** 2
         tauComp = -M * g / (np.pi * R[i])

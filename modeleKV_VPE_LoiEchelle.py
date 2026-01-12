@@ -39,7 +39,7 @@ def r_fin(
     # Sortie
     uc = h0 * (rho * g * h0 - tau0) / k
     Ga = rho * g * h0 / (k * uc / h0)
-    x1 = (Ga * h0 / r0) ** (1 / 5)
+    x1 = (Ga * h0 / r0) ** (1 / (2 * m + 3))
 
     Bn = tau0 / (rho * g * h0)
     x2 = (h0 / (r0 * Bn)) ** (1 / 3)
