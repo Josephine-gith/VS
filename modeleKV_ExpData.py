@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import itertools
 
 from ExpData_Df import df_exp
 from modeleKV_solve import modeleKV_solve
@@ -8,7 +7,7 @@ from modeleKV_solve import modeleKV_solve
 # Préparation des données
 
 df_exp["h_inf/h0"] = 1 - df_exp["1 - h_inf/h0"]
-df_exp["Uc/Ucr"] = (-1 + 1 / df_exp["Bn"]) * (
+df_exp["Uc/Ucr"] = (-1 + 1 / df_exp["Bn"]) ** (1 / df_exp["m"]) * (
     df_exp["h0 [m]"] / (df_exp["Bn"] * df_exp["r0 [m]"])
 ) ** (2 / 3)
 
@@ -25,9 +24,13 @@ df["err"] = df["1 - h_inf/h0 KV"] / df["1 - h_inf/h0"] - 1
 
 # Styles par matériau
 
-markers = itertools.cycle(["o", "P", "X", "s", "D", "^", "v", "*"])
-colors = itertools.cycle(plt.cm.tab10.colors)
-style = {m: (next(markers), next(colors)) for m in df["material"].unique()}
+markers_list = ["o", "P", "X", "s", "D", "^", "v", "*"]
+cmap = plt.cm.get_cmap("Set1")
+colors_list = [cmap(i) for i in range(cmap.N)]
+style = {
+    m: (markers_list[i % len(markers_list)], colors_list[i % len(colors_list)])
+    for i, m in enumerate(df["material"].unique())
+}
 
 
 # Graphe 1
