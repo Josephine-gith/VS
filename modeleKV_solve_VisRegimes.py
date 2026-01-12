@@ -26,9 +26,6 @@ def modeleKV_solve(
     def kelvin_voigt_ode(t, y):
         R, U, Gamma = y
 
-        # Protection numérique
-        R = max(R, 1e-6)
-
         gamma_p = a * U * (R / r0) ** 2 / h0
 
         tauT = (
@@ -67,24 +64,25 @@ def modeleKV_solve(
 
 
 # Paramètres
+Tau0 = np.logspace(1e-3, 30, 60)
 
-H0 = np.array([0.05, 0.1, 0.25, 0.4, 0.65, 0.85, 1.0, 1.2, 1.7, 2.0, 2.45, 3.0, 10])
+h0 = 0.2
 r0 = 0.1
 M = 0.0
 
 rho = 1e3
-k = 40
+k = 20
 G = 0
-tau0 = 30
-sigma = 5e-2
+# tau0 = 30
+sigma = 0
 m = 1
 g = 9.81
 
 Di = 0.2
-Bn = tau0 / (rho * g * H0)
-xBn = (H0 / (Bn * r0)) ** (1 / 3)
-Ga = rho * g * H0 / (rho * g * H0 - tau0)
-xGa = (Ga * H0 / r0) ** (1 / 5)
+Bn = Tau0 / (rho * g * h0)
+xBn = (h0 / (Bn * r0)) ** (1 / 3)
+Ga = rho * g * h0 / (rho * g * h0 - Tau0)
+xGa = (Ga * h0 / r0) ** (1 / (2 * m + 3))
 
 t_final = 10.0  # N*dt = 10s
 
@@ -113,7 +111,7 @@ df = pd.DataFrame(
     ]
 )
 
-for i, h0 in enumerate(H0):
+for i, tau0 in enumerate(Tau0):
     T, R, U, Gamma = modeleKV_solve(h0, r0, rho, k, tau0)
     uc = h0 * ((rho * g * h0 - tau0 - G * r0 / h0) / k) ** (1 / m)
     ucr = (
@@ -147,13 +145,14 @@ for i, h0 in enumerate(H0):
 # Tracés
 plt.figure()
 
-plt.plot(
-    df["(1/Bn*h0/r0)**1/3"] / df["(Ga*h0/r0)**(1/2m+3)"],
-    df["r_inf/r0"] / df["(Ga*h0/r0)**(1/2m+3)"],
-)
+X = df["(1/Bn*h0/r0)**1/3"] / df["(Ga*h0/r0)**(1/2m+3)"]
+Y = df["r_inf/r0"] / df["(Ga*h0/r0)**(1/2m+3)"]
+
+plt.plot(X, Y)
 plt.ylabel("r_inf/r0 / (Ga*h0/r0)**(1/2m+3)")
 plt.xlabel("(1/Bn*h0/r0)**1/3  /  (Ga*h0/r0)**(1/2m+3)")
 plt.xscale("log")
+plt.yscale("log")
 plt.grid()
 
 plt.tight_layout()
