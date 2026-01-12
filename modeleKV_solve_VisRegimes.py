@@ -68,7 +68,7 @@ def modeleKV_solve(
 
 # Paramètres
 
-H0 = np.array([0.05, 0.1, 0.25, 0.4, 0.65, 0.85, 1.0, 1.2, 1.7, 2., 2.45, 3., 10])
+H0 = np.array([0.05, 0.1, 0.25, 0.4, 0.65, 0.85, 1.0, 1.2, 1.7, 2.0, 2.45, 3.0, 10])
 r0 = 0.1
 M = 0.0
 
@@ -115,8 +115,12 @@ df = pd.DataFrame(
 
 for i, h0 in enumerate(H0):
     T, R, U, Gamma = modeleKV_solve(h0, r0, rho, k, tau0)
-    uc = h0 * (rho * g * h0 - tau0) / k
-    ucr = tau0 ** (5 / 3) * (h0 / k) / (rho * g * h0**2 / r0) ** (2 / 3)
+    uc = h0 * ((rho * g * h0 - tau0 - G * r0 / h0) / k) ** (1 / m)
+    ucr = (
+        tau0 ** (2 / 3 + 1 / m)
+        * h0
+        / (k ** (1 / m) * (rho * g * h0**2 / r0) ** (2 / 3))
+    )
     df.loc[len(df)] = {
         "T": T.tolist(),
         "r_inf": R[-1],

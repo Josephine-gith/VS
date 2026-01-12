@@ -12,6 +12,7 @@ final_columns = [
     "k [Pa s]",
     "h0 [m]",
     "r0 [m]",
+    "m",
 ]
 
 # Lire toutes les feuilles
