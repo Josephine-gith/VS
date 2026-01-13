@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 import pandas as pd
+from joblib import Parallel, delayed
 
 
 def modeleKV_solve(
@@ -19,29 +20,54 @@ def modeleKV_solve(
     Di=0.2,
     t_final=10.0,
 ):
-    t_eval = np.linspace(0, t_final, 1000)
     eta = Di * tau0 * (g / h0) ** 0.5
+    rho_h0 = rho * h0
+    inv_r0 = 1.0 / r0
 
     # Système d'EDO
     def kelvin_voigt_ode(t, y):
         R, U, Gamma = y
+        dydt = np.empty(3)
 
-        gamma_p = a * U * (R / r0) ** 2 / h0
+        Rr2 = (R * inv_r0) ** 2
+        gamma_p = a * U * Rr2 / h0
 
         tauT = (
             (k + eta) * np.abs(gamma_p) ** m * np.sign(gamma_p)
             + tau0
             + G * Gamma
-            - rho * g * h0 * (r0 / R) ** 2
+            - rho_h0 * g * (r0 / R) ** 2
             - M * g / (np.pi * R)
             + sigma * r0 * (r0 / R - 1)
         )
 
-        dRdt = U
-        dGammadt = gamma_p
-        dUdt = -((R / r0) ** 2) / (rho * h0) * tauT
+        dydt[0] = U
+        dydt[1] = -((R / r0) ** 2) / (rho_h0) * tauT
+        dydt[2] = gamma_p
 
-        return [dRdt, dUdt, dGammadt]
+        return dydt
+
+    def jac(t, y):
+        R, U, Gamma = y
+        Rr2 = (R / r0) ** 2
+
+        J = np.zeros((3, 3))
+        J[0, 1] = 1.0
+
+        J[2, 0] = 2 * a * U * R / (r0**2 * h0)
+        J[2, 1] = a * (R / r0) ** 2 / h0
+
+        J[1, 0] = 0
+        # J[1, 0] = -2 * R * tauT / (rho * h0 * r0**2)
+        J[1, 2] = -(Rr2 * G) / (rho * h0)
+
+        return J
+
+    def stop_when_converged(t, y):
+        return np.abs(y[-1]) - 1e-6  # abs(U) petit
+
+    stop_when_converged.terminal = True
+    stop_when_converged.direction = -1
 
     # Conditions initiales
     y0 = [r0, 0.0, 0.0]
@@ -51,10 +77,11 @@ def modeleKV_solve(
         kelvin_voigt_ode,
         t_span=(0, t_final),
         y0=y0,
+        jac=jac,
         method="BDF",  # Méthode implicite stable
-        t_eval=t_eval,
-        rtol=1e-6,
-        atol=1e-9,
+        rtol=1e-5,
+        atol=[1e-9, 1e-7, 1e-9],
+        events=stop_when_converged,
     )
 
     R, U, Gamma = sol.y
@@ -64,7 +91,7 @@ def modeleKV_solve(
 
 
 # Paramètres
-Tau0 = np.logspace(1e-3, 30, 60)
+Tau0 = np.logspace(1e-3, 20, 40)
 
 h0 = 0.2
 r0 = 0.1
@@ -86,40 +113,18 @@ xGa = (Ga * h0 / r0) ** (1 / (2 * m + 3))
 
 t_final = 10.0  # N*dt = 10s
 
-df = pd.DataFrame(
-    columns=[
-        "T",
-        "r_inf",
-        "g",
-        "rho",
-        "h0",
-        "r0",
-        "k",
-        "tau0",
-        "m",
-        "h0/r0",
-        "r_inf/r0",
-        "h_inf",
-        "h_inf/h0",
-        "Uc",
-        "Ucr",
-        "Uc/Ucr",
-        "Ga",
-        "Bn",
-        "(Ga*h0/r0)**(1/2m+3)",
-        "(1/Bn*h0/r0)**1/3",
-    ]
-)
 
-for i, tau0 in enumerate(Tau0):
+def run_one(i, tau0):
     T, R, U, Gamma = modeleKV_solve(h0, r0, rho, k, tau0)
+
     uc = h0 * ((rho * g * h0 - tau0 - G * r0 / h0) / k) ** (1 / m)
     ucr = (
         tau0 ** (2 / 3 + 1 / m)
         * h0
         / (k ** (1 / m) * (rho * g * h0**2 / r0) ** (2 / 3))
     )
-    df.loc[len(df)] = {
+
+    return {
         "T": T.tolist(),
         "r_inf": R[-1],
         "g": g,
@@ -141,6 +146,13 @@ for i, tau0 in enumerate(Tau0):
         "(Ga*h0/r0)**(1/2m+3)": xGa[i],
         "(1/Bn*h0/r0)**1/3": xBn[i],
     }
+
+
+rows = Parallel(n_jobs=-1, backend="loky")(
+    delayed(run_one)(i, tau0) for i, tau0 in enumerate(Tau0)
+)
+
+df = pd.DataFrame(rows)
 
 # Tracés
 plt.figure()
