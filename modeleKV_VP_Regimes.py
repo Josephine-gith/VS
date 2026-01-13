@@ -82,7 +82,7 @@ g = 9.81
 Di = 0.2
 Bn = Tau0 / (rho * g * h0)
 xBn = (h0 / (Bn * r0)) ** (1 / 3)
-Ga = rho * g * h0 / (rho * g * h0 - Tau0)
+Ga = rho * g * h0 / (rho * g * h0 - Tau0 - G * r0 / h0)
 xGa = (Ga * h0 / r0) ** (1 / (2 * m + 3))
 
 t_final = 10.0  # N*dt = 10s

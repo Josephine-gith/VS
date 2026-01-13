@@ -37,7 +37,7 @@ def r_fin(
         U[i + 1] = -dt * (R[i] / r0) ** 2 / (rho * h0) * tauT + U[i]
 
     # Sortie
-    uc = h0 * (rho * g * h0 - tau0) / k
+    uc = h0 * (rho * g * h0 - tau0 - G * r0 / h0) / k
     Ga = rho * g * h0 / (k * uc / h0)
     x1 = (Ga * h0 / r0) ** (1 / (2 * m + 3))
 
