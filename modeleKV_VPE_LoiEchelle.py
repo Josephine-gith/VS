@@ -62,7 +62,7 @@ def r_fin(
 
 
 # Simulations pour chaque régime
-H0 = [0.05, 0.1, 0.25, 0.3, 0.50, 0.65, 0.8, 1.0]
+H0 = np.array([0.05, 0.1, 0.25, 0.3, 0.50, 0.65, 0.8, 1.0])
 Sim_visc = np.zeros((len(H0), 6))
 Sim_plas = np.zeros((len(H0), 6))
 Sim_elas = np.zeros((len(H0), 6))
@@ -83,21 +83,21 @@ plt.scatter(Sim_visc[:, 0], Sim_visc[:, 3])
 plt.title("Régime visqueux (Bn=1e-6 - El=1e-6)")
 plt.xlabel("(Ga * h0 / r0) ** (1 / 5)")
 plt.ylabel("r_fin/r0 - 1")
-plt.grid()
+plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 
 plt.subplot(1, 3, 2)
 plt.scatter(Sim_plas[:, 1], Sim_plas[:, 3])
 plt.title("Régime plastique (k=1e-3 - El=1e-6)")
 plt.xlabel("(h0 / (r0 * Bn)) ** (1 / 3)")
 plt.ylabel("r_fin/r0 - 1")
-plt.grid()
+plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 
 plt.subplot(1, 3, 3)
 plt.scatter(Sim_plas[:, 2], Sim_plas[:, 4])
 plt.title("Régime élastique (k=1e-3 - Bn=0.003)")
 plt.xlabel("(h0 / (r0 * El)) ** (1 / 6)")
 plt.ylabel("r_max/r0 - 1")
-plt.grid()
+plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 
 plt.tight_layout()
 plt.show()

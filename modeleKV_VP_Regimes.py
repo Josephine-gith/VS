@@ -140,7 +140,7 @@ plt.ylabel("r_inf/r0 / (Ga*h0/r0)**(1/2m+3)")
 plt.xlabel("(1/Bn*h0/r0)**1/3  /  (Ga*h0/r0)**(1/2m+3)")
 plt.xscale("log")
 plt.yscale("log")
-plt.grid()
+plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 
 plt.tight_layout()
 plt.show()

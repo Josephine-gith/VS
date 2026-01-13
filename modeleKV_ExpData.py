@@ -47,7 +47,7 @@ ax1.set_xscale("log")
 ax1.set_xlabel("Uc/Ucr")
 ax1.set_ylabel("h_inf/h0")
 ax1.set_title("Hauteur finale normalisée exp et modèle KV")
-ax1.grid()
+ax1.grid(True, which="both", linestyle="--", linewidth=0.5)
 
 
 # Graphe 2
@@ -61,7 +61,7 @@ ax2.set_xscale("log")
 ax2.set_xlabel("Uc/Ucr")
 ax2.set_ylabel("(1 - h_inf/h0)th / (1 - h_inf/h0)exp - 1")
 ax2.set_title("Erreur normalisée entre exp et modèle")
-ax2.grid()
+ax2.grid(True, which="both", linestyle="--", linewidth=0.5)
 
 handles, labels = ax1.get_legend_handles_labels()
 handles2 = handles[::2] + handles[1::2]

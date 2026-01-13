@@ -98,17 +98,17 @@ if __name__ == "__main__":
     plt.subplot(1, 3, 1)
     plt.plot(T, R)
     plt.title("r(t)")
-    plt.grid()
+    plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 
     plt.subplot(1, 3, 2)
     plt.plot(T, U)
     plt.title("u(t)")
-    plt.grid()
+    plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 
     plt.subplot(1, 3, 3)
     plt.plot(T, Gamma)
     plt.title("gamma(t)")
-    plt.grid()
+    plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 
     plt.tight_layout()
     plt.show()
