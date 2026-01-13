@@ -28,6 +28,7 @@ modeleKV_VPE_LoiEchelle.py :
 modeleKV_VP_Regimes.py :
 * Utilise la méthode solve_ivp de scipy.integrate pour calculer le rayon final pour différentes valeurs de $\tau_0$.
 * Trace $\frac{r_\infty}{r_0}/(Ga\frac{h_0}{r_0})^{\frac{1}{2m+3}}$ en fonction de $(\frac{1}{Bn}\frac{h_0}{r_0})^{\frac{1}{3}}/(Ga\frac{h_0}{r_0})^{\frac{1}{2m+3}}$ pour visualiser les deux régimes et vérifier les lois d'échelle.
+* Les simulations faites dans ce code sont stockées dans le tableau excel Simulations.xlsx
 
 ### Comparaison avec des données expérimentales, issues de la littérature
 

@@ -65,7 +65,7 @@ def modeleKV_solve(
 
 
 # Paramètres
-Tau0 = np.logspace(-2, 3, 50)
+mL = np.array([0.1, 0.5, 0.8, 1, 1.3, 10])
 
 h0 = 0.2
 r0 = 0.1
@@ -74,21 +74,21 @@ M = 0.0
 rho = 1e3
 k = 20
 G = 0
-# tau0 = 30
+tau0 = 10
 sigma = 0
-m = 1
+# m = 1
 g = 9.81
 
 Di = 0.2
-Bn = Tau0 / (rho * g * h0)
+Bn = tau0 / (rho * g * h0)
 xBn = (h0 / (Bn * r0)) ** (1 / 3)
-Ga = rho * g * h0 / (rho * g * h0 - Tau0 - G * r0 / h0)
-xGa = (Ga * h0 / r0) ** (1 / (2 * m + 3))
+Ga = rho * g * h0 / (rho * g * h0 - tau0 - G * r0 / h0)
+xGa = (Ga * h0 / r0) ** (1 / (2 * mL + 3))
 
 t_final = 10.0  # N*dt = 10s
 rows = []
 
-for i, tau0 in enumerate(Tau0):
+for i, m in enumerate(mL):
     T, R, U, Gamma = modeleKV_solve(h0, r0, rho, k, tau0)
 
     uc = h0 * ((rho * g * h0 - tau0 - G * r0 / h0) / k) ** (1 / m)
@@ -116,18 +116,15 @@ for i, tau0 in enumerate(Tau0):
             "Uc": uc,
             "Ucr": ucr,
             "Uc/Ucr": uc / ucr,
-            "Ga": Ga[i],
-            "Bn": Bn[i],
+            "Ga": Ga,
+            "Bn": Bn,
             "(Ga*h0/r0)**(1/2m+3)": xGa[i],
-            "(1/Bn*h0/r0)**1/3": xBn[i],
+            "(1/Bn*h0/r0)**1/3": xBn,
         }
     )
 
 
 df = pd.DataFrame(rows)
-
-file_name = "Simulations.xlsx"
-df.to_excel(file_name)
 
 # Tracés
 plt.figure()
