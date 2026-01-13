@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 import pandas as pd
-from joblib import Parallel, delayed
 
 
 def modeleKV_solve(
@@ -27,7 +26,6 @@ def modeleKV_solve(
     # Système d'EDO
     def kelvin_voigt_ode(t, y):
         R, U, Gamma = y
-        dydt = np.empty(3)
 
         Rr2 = (R * inv_r0) ** 2
         gamma_p = a * U * Rr2 / h0
@@ -41,33 +39,12 @@ def modeleKV_solve(
             + sigma * r0 * (r0 / R - 1)
         )
 
-        dydt[0] = U
-        dydt[1] = -((R / r0) ** 2) / (rho_h0) * tauT
-        dydt[2] = gamma_p
+        dRdt = U
+        dUdt = -((R / r0) ** 2) / (rho_h0) * tauT
+        dGammadt = gamma_p
 
-        return dydt
+        return [dRdt, dUdt, dGammadt]
 
-    def jac(t, y):
-        R, U, Gamma = y
-        Rr2 = (R / r0) ** 2
-
-        J = np.zeros((3, 3))
-        J[0, 1] = 1.0
-
-        J[2, 0] = 2 * a * U * R / (r0**2 * h0)
-        J[2, 1] = a * (R / r0) ** 2 / h0
-
-        J[1, 0] = 0
-        # J[1, 0] = -2 * R * tauT / (rho * h0 * r0**2)
-        J[1, 2] = -(Rr2 * G) / (rho * h0)
-
-        return J
-
-    def stop_when_converged(t, y):
-        return np.abs(y[-1]) - 1e-6  # abs(U) petit
-
-    stop_when_converged.terminal = True
-    stop_when_converged.direction = -1
 
     # Conditions initiales
     y0 = [r0, 0.0, 0.0]
@@ -77,11 +54,9 @@ def modeleKV_solve(
         kelvin_voigt_ode,
         t_span=(0, t_final),
         y0=y0,
-        jac=jac,
         method="BDF",  # Méthode implicite stable
         rtol=1e-5,
         atol=[1e-9, 1e-7, 1e-9],
-        events=stop_when_converged,
     )
 
     R, U, Gamma = sol.y
@@ -91,7 +66,7 @@ def modeleKV_solve(
 
 
 # Paramètres
-Tau0 = np.logspace(1e-3, 20, 40)
+Tau0 = np.logspace(1e-3, 30, 60)
 
 h0 = 0.2
 r0 = 0.1
@@ -112,9 +87,9 @@ Ga = rho * g * h0 / (rho * g * h0 - Tau0)
 xGa = (Ga * h0 / r0) ** (1 / (2 * m + 3))
 
 t_final = 10.0  # N*dt = 10s
+rows = []
 
-
-def run_one(i, tau0):
+for i, tau0 in enumerate(Tau0):
     T, R, U, Gamma = modeleKV_solve(h0, r0, rho, k, tau0)
 
     uc = h0 * ((rho * g * h0 - tau0 - G * r0 / h0) / k) ** (1 / m)
@@ -124,7 +99,7 @@ def run_one(i, tau0):
         / (k ** (1 / m) * (rho * g * h0**2 / r0) ** (2 / 3))
     )
 
-    return {
+    rows.append({
         "T": T.tolist(),
         "r_inf": R[-1],
         "g": g,
@@ -145,12 +120,8 @@ def run_one(i, tau0):
         "Bn": Bn[i],
         "(Ga*h0/r0)**(1/2m+3)": xGa[i],
         "(1/Bn*h0/r0)**1/3": xBn[i],
-    }
+    })
 
-
-rows = Parallel(n_jobs=-1, backend="loky")(
-    delayed(run_one)(i, tau0) for i, tau0 in enumerate(Tau0)
-)
 
 df = pd.DataFrame(rows)
 
