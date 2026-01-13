@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-## Modèle de Hescher-Bukley + Maxwell
+## Modèle de Maxwell
 
 # -----------------------------
 # Paramètres numériques

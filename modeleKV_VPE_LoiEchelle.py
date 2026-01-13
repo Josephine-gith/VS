@@ -61,37 +61,16 @@ def r_fin(
     return x1, x2, x3, y1, y2, U[-1]
 
 
-# Fonctions qui fixent les Bn, Ga et El pour garantir l'entrée dans un régime
-
-
-def fixe_Bn(h0, Bn, rho=1e3, g=9.81):
-    # Retourne tau0
-    return Bn * rho * g * h0
-
-
-"""
-def fixe_Ga(h0, Ga, rho=1e3, g=9.81, uc=1):  # Quelle valeur de Uc ?
-    # Retourne k
-    return rho * g * h0**2 / (uc * Ga)
-"""
-
-
-def fixe_El(h0, El, r0=0.1, rho=1e3, g=9.81):
-    # Retourne G
-    return El * rho * g * h0**2 / r0
-
-
 # Simulations pour chaque régime
 H0 = [0.05, 0.1, 0.25, 0.3, 0.50, 0.65, 0.8, 1.0]
-# H0 = [0.25]
 Sim_visc = np.zeros((len(H0), 6))
 Sim_plas = np.zeros((len(H0), 6))
 Sim_elas = np.zeros((len(H0), 6))
 
 for i, h0 in enumerate(H0):
-    Sim_visc[i] = r_fin(h0=h0, k=50, tau0=fixe_Bn(h0, 1e-6), G=fixe_El(h0, 1e-6))
-    Sim_plas[i] = r_fin(h0=h0, tau0=20, k=1e-6, G=fixe_El(h0, 1e-10), N=10**6)
-    Sim_elas[i] = r_fin(h0=h0, G=300, tau0=fixe_Bn(h0, 1e-6), k=1e-8, N=10**5)
+    Sim_visc[i] = r_fin(h0=h0, k=50, tau0=1e-6, G=1e-6)
+    Sim_plas[i] = r_fin(h0=h0, tau0=20, k=1e-6, G=1e-10)
+    Sim_elas[i] = r_fin(h0=h0, G=300, tau0=1e-6, k=1e-8, N=10**5)
 
 
 # Pour vérifier que U_fin est bien ~ 0

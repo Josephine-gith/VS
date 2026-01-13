@@ -45,7 +45,6 @@ def modeleKV_solve(
 
         return [dRdt, dUdt, dGammadt]
 
-
     # Conditions initiales
     y0 = [r0, 0.0, 0.0]
 
@@ -66,7 +65,7 @@ def modeleKV_solve(
 
 
 # Paramètres
-Tau0 = np.logspace(1e-3, 30, 60)
+Tau0 = np.logspace(1e-3, 40, 100)
 
 h0 = 0.2
 r0 = 0.1
@@ -99,28 +98,30 @@ for i, tau0 in enumerate(Tau0):
         / (k ** (1 / m) * (rho * g * h0**2 / r0) ** (2 / 3))
     )
 
-    rows.append({
-        "T": T.tolist(),
-        "r_inf": R[-1],
-        "g": g,
-        "rho": rho,
-        "h0": h0,
-        "r0": r0,
-        "k": k,
-        "tau0": tau0,
-        "m": m,
-        "h0/r0": h0 / r0,
-        "r_inf/r0": R[-1] / r0,
-        "h_inf": h0 * (r0 / R[-1]) ** 2,
-        "h_inf/h0": (r0 / R[-1]) ** 2,
-        "Uc": uc,
-        "Ucr": ucr,
-        "Uc/Ucr": uc / ucr,
-        "Ga": Ga[i],
-        "Bn": Bn[i],
-        "(Ga*h0/r0)**(1/2m+3)": xGa[i],
-        "(1/Bn*h0/r0)**1/3": xBn[i],
-    })
+    rows.append(
+        {
+            "T": T.tolist(),
+            "r_inf": R[-1],
+            "g": g,
+            "rho": rho,
+            "h0": h0,
+            "r0": r0,
+            "k": k,
+            "tau0": tau0,
+            "m": m,
+            "h0/r0": h0 / r0,
+            "r_inf/r0": R[-1] / r0,
+            "h_inf": h0 * (r0 / R[-1]) ** 2,
+            "h_inf/h0": (r0 / R[-1]) ** 2,
+            "Uc": uc,
+            "Ucr": ucr,
+            "Uc/Ucr": uc / ucr,
+            "Ga": Ga[i],
+            "Bn": Bn[i],
+            "(Ga*h0/r0)**(1/2m+3)": xGa[i],
+            "(1/Bn*h0/r0)**1/3": xBn[i],
+        }
+    )
 
 
 df = pd.DataFrame(rows)
