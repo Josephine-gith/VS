@@ -21,14 +21,12 @@ def modeleKV_solve(
 ):
     eta = Di * tau0 * (g / h0) ** 0.5
     rho_h0 = rho * h0
-    inv_r0 = 1.0 / r0
 
     # Système d'EDO
     def kelvin_voigt_ode(t, y):
         R, U, Gamma = y
 
-        Rr2 = (R * inv_r0) ** 2
-        gamma_p = a * U * Rr2 / h0
+        gamma_p = a * U / R
 
         tauT = (
             (k + eta) * np.abs(gamma_p) ** m * np.sign(gamma_p)
@@ -88,18 +86,17 @@ m = 1
 Bn = Tau0 / (rho * g * h0)
 xBn = (h0 / (Bn * r0)) ** (1 / 3)
 Ga = rho * g * h0 / (rho * g * h0 - Tau0 - G * r0 / h0)
-xGa = (Ga * h0 / r0) ** (1 / (2 * m + 3))
+xGa = (Ga * (h0 / r0) ** (1 - m)) ** (1 / (3 - m))
 
 
 for i, tau0 in enumerate(Tau0):
     T, R, U, Gamma = modeleKV_solve(h0, r0, rho, k, tau0, m=m, g=g, Di=Di)
 
-    uc = h0 * ((rho * g * h0 - tau0 - G * r0 / h0) / k) ** (1 / m)
-    ucr = (
-        tau0 ** (2 / 3 + 1 / m)
-        * h0
-        / (k ** (1 / m) * (rho * g * h0**2 / r0) ** (2 / 3))
-    )
+    uc = r0 * ((rho * g * h0 - tau0 - G * r0 / h0) / k) ** (1 / m)
+    ucr = h0 * (
+        (rho * g * h0) ** (2 - m / 3)
+        / (k * tau0 ** (1 - m / 3) * (h0 / r0) ** (2 * m / 3))
+    ) ** (1 / m)
 
     rows.append(
         {
@@ -121,7 +118,7 @@ for i, tau0 in enumerate(Tau0):
             "Uc/Ucr": uc / ucr,
             "Ga": Ga[i],
             "Bn": Bn[i],
-            "(Ga*h0/r0)**(1/2m+3)": xGa[i],
+            "scaling visqueux": xGa[i],
             "(1/Bn*h0/r0)**1/3": xBn[i],
         }
     )
@@ -135,8 +132,8 @@ df1.to_excel(file_name)
 plt.figure()
 
 
-X1 = df1["(1/Bn*h0/r0)**1/3"] / df1["(Ga*h0/r0)**(1/2m+3)"]
-Y1 = df1["r_inf/r0"] / df1["(Ga*h0/r0)**(1/2m+3)"]
+X1 = df1["(1/Bn*h0/r0)**1/3"] / df1["scaling visqueux"]
+Y1 = df1["r_inf/r0"] / df1["scaling visqueux"]
 
 
 plt.plot(X1, Y1, label="tau0 varie")
