@@ -30,6 +30,8 @@ def modeleKV_solve(
         R = max(R, 1e-6)
 
         gamma_p = a * U * (R / r0) ** 2 / h0
+        if np.isnan(gamma_p) or np.isinf(gamma_p):
+            gamma_p = 0.0
 
         tauT = (
             (k + eta) * np.abs(gamma_p) ** m * np.sign(gamma_p)

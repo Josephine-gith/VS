@@ -103,7 +103,6 @@ for i, tau0 in enumerate(Tau0):
 
     rows.append(
         {
-            "Mod": "tau0",
             "T": T.tolist(),
             "r_inf": R[-1],
             "g": g,
@@ -127,79 +126,24 @@ for i, tau0 in enumerate(Tau0):
         }
     )
 
-
-# En faisant varier m
-
-mL = 0.01 * np.arange(20, 101)
-tau0 = 10
-
-Bn = tau0 / (rho * g * h0)
-xBn = (h0 / (Bn * r0)) ** (1 / 3)
-Ga = rho * g * h0 / (rho * g * h0 - tau0 - G * r0 / h0)
-xGa = (Ga * h0 / r0) ** (1 / (2 * mL + 3))
-
-for i, m in enumerate(mL):
-    T, R, U, Gamma = modeleKV_solve(
-        h0, r0, rho, k, tau0, m=m, g=g, Di=Di
-    )
-
-    uc = h0 * ((rho * g * h0 - tau0 - G * r0 / h0) / k) ** (1 / m)
-    ucr = (
-        tau0 ** (2 / 3 + 1 / m)
-        * h0
-        / (k ** (1 / m) * (rho * g * h0**2 / r0) ** (2 / 3))
-    )
-
-    rows.append(
-        {
-            "Mod": "m",
-            "T": T.tolist(),
-            "r_inf": R[-1],
-            "g": g,
-            "rho": rho,
-            "h0": h0,
-            "r0": r0,
-            "k": k,
-            "tau0": tau0,
-            "m": m,
-            "h0/r0": h0 / r0,
-            "r_inf/r0": R[-1] / r0,
-            "h_inf": h0 * (r0 / R[-1]) ** 2,
-            "h_inf/h0": (r0 / R[-1]) ** 2,
-            "Uc": uc,
-            "Ucr": ucr,
-            "Uc/Ucr": uc / ucr,
-            "Ga": Ga,
-            "Bn": Bn,
-            "(Ga*h0/r0)**(1/2m+3)": xGa[i],
-            "(1/Bn*h0/r0)**1/3": xBn,
-        }
-    )
-
-
-df = pd.DataFrame(rows)
+df1 = pd.DataFrame(rows)
 
 file_name = "Simulations.xlsx"
-df.to_excel(file_name)
+df1.to_excel(file_name)
 
 # Tracés
 plt.figure()
 
-df1 = df[df["Mod"] == "tau0"]
+
 X1 = df1["(1/Bn*h0/r0)**1/3"] / df1["(Ga*h0/r0)**(1/2m+3)"]
 Y1 = df1["r_inf/r0"] / df1["(Ga*h0/r0)**(1/2m+3)"]
 
-df2 = df[df["Mod"] == "m"]
-X2 = df2["(1/Bn*h0/r0)**1/3"] / df2["(Ga*h0/r0)**(1/2m+3)"]
-Y2 = df2["r_inf/r0"] / df2["(Ga*h0/r0)**(1/2m+3)"]
 
 plt.plot(X1, Y1, label="tau0 varie")
-plt.plot(X2, Y2, label="m varie")
 plt.ylabel("r_inf/r0 / (Ga*h0/r0)**(1/2m+3)")
 plt.xlabel("nombre d'effondrement")
 plt.xscale("log")
 plt.yscale("log")
-plt.legend()
 plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 
 plt.tight_layout()

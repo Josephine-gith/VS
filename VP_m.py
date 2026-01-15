@@ -12,8 +12,8 @@ def modeleKV_solve(
     tau0,
     a=1,
     M=0,
-    G=50,
-    sigma=5e-2,
+    G=0,
+    sigma=0,
     m=1,
     g=9.81,
     Di=0.2,
@@ -65,7 +65,7 @@ def modeleKV_solve(
 
 
 # Paramètres
-mL = np.array([0.1, 0.5, 0.8, 1, 1.3, 10])
+mL = 0.01 * np.arange(20, 101)
 
 h0 = 0.2
 r0 = 0.1
@@ -89,7 +89,7 @@ t_final = 10.0  # N*dt = 10s
 rows = []
 
 for i, m in enumerate(mL):
-    T, R, U, Gamma = modeleKV_solve(h0, r0, rho, k, tau0)
+    T, R, U, Gamma = modeleKV_solve(h0, r0, rho, k, tau0, m=m, g=g, Di=Di)
 
     uc = h0 * ((rho * g * h0 - tau0 - G * r0 / h0) / k) ** (1 / m)
     ucr = (
@@ -133,11 +133,11 @@ X = df["(1/Bn*h0/r0)**1/3"] / df["(Ga*h0/r0)**(1/2m+3)"]
 Y = df["r_inf/r0"] / df["(Ga*h0/r0)**(1/2m+3)"]
 
 plt.plot(X, Y)
-plt.ylabel("r_inf/r0 / (Ga*h0/r0)**(1/2m+3)")
-plt.xlabel("(1/Bn*h0/r0)**1/3  /  (Ga*h0/r0)**(1/2m+3)")
+plt.ylabel("r_inf/r0 / scaling visqueux")
+plt.xlabel("Nombre d'effondrement")
 plt.xscale("log")
 plt.yscale("log")
-plt.grid()
+plt.grid(which="both")
 
 plt.tight_layout()
 plt.show()
