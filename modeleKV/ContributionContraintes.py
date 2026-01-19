@@ -70,8 +70,8 @@ def modeleKV_solve(
             tauT = tauVisc + tau0 + tauElas + tauPoids + tauComp + tauCapi + tauDi
 
             Contraintes.append(
-                np.array((tauVisc, tau0, tauElas, tauPoids, tauCapi, tauDi, -tauT))
-                / abs(tauComp)
+                np.array((tauVisc, tau0, tauElas, tauCapi, tauDi, -tauT))
+                / abs(tauComp + tauPoids)
             )
 
         return np.array(Contraintes)
@@ -129,7 +129,6 @@ if __name__ == "__main__":
             "Visqueuse",
             "Plastique",
             "Elastique",
-            "Poids",
             "Capillaire",
             "Dissipatif",
             "Total",
