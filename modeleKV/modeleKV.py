@@ -4,23 +4,24 @@ import matplotlib.pyplot as plt
 ## Modèle de Kelvin Voigt
 
 # Temps final N*dt
-N = 10**4  # Nombre d'itérations
-dt = 1e-3  # Pas de temps, en sec
+t_final = 1.
+dt = 1e-5  # Pas de temps, en sec
+N = int(t_final/dt)  # Nombre d'itérations
 
 Di = 0.2  # Nombre de dissipation
 
 # Paramètres de l'expérience
-h0 = 0.1  # m
-r0 = 0.1  # m
-M = 0.05  # kg
+h0 = 0.005  # m
+r0 = 0.0025  # m
+M = 0.3  # kg
 
 # Propriétés du matériau
 rho = 1e3  # kg/m3
-k = 40  # Pa.s
+k = 170  # Pa.s
 G = 50  # Pa
-tau0 = 30  # Pa
+tau0 = 62  # Pa
 sigma = 5e-2  # Pa.m
-m = 1
+m = 0.45
 
 g = 9.81  # m/s2
 

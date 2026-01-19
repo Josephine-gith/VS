@@ -42,6 +42,7 @@ def modeleKV_solve(
             + sigma * r0 * (r0 / R - 1)
         )
 
+
         dRdt = U
         dGammadt = gamma_p
         dUdt = -((R / r0) ** 2) / (rho * h0) * tauT
@@ -75,7 +76,7 @@ if __name__ == "__main__":
 
     h0 = 0.005
     r0 = 0.0025
-    ML = [0.3]
+    ML = [0.05, 0.1, 0.3, 0.5]
 
     rho = 1e3
     k = 170
@@ -84,56 +85,32 @@ if __name__ == "__main__":
     sigma = 5e-2
     m = 0.45
     g = 9.81
-
+    
+    a=1
     Di = 0.2
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 600.0  # N*dt = 10s
+    t_final = 60.0  # N*dt = 10s
 
-    RL = []
-    HL = []
-    UL = []
-    T = []
+    SS_L = []
+    GammaP_L = []
 
     for n, M in enumerate(ML):
         c, T, R, U, Gamma = modeleKV_solve(
             h0, r0, rho, k, Bn, M=M, G=G, sigma=sigma, m=m, g=g, Di=Di, t_final=t_final
         )
-        RL.append(R)
-        HL.append(h0*(r0/R)**2)
-        UL.append(U)
-
-    # print(f"Rayon final : {R[-1]:.4f} m")
+        GammaP = a*U*(R/r0)**2/h0
+        GammaP_L.append(GammaP)
+        SS_L.append(k*GammaP**m + tau0+G*Gamma)
 
     # Tracés
     plt.figure()
-    plt.subplot(1, 2, 1)
+
     for n in range(len(ML)):
-        plt.plot(T, 1000 * RL[n], label=f"M={1000 * ML[n]}g")
-    plt.title("r(t)")
+        plt.plot(GammaP_L[n], SS_L[n], label=f"M={1000*ML[n]}g")
     plt.grid(True, which="both", linestyle="--", linewidth=0.5)
-    plt.xlabel("t (en s)")
-    plt.ylabel("r (en mm)")
+    plt.xlabel("Strain rate [1/s]")
+    plt.ylabel("Shear stress [Pa]")
     plt.legend()
 
-    """
-    plt.subplot(1, 2, 2)
-    for n in range(len(ML)):
-        plt.plot(T, UL[n], label=f"M={1000 * ML[n]}g")
-    plt.title("u(t)")
-    plt.grid(True, which="both", linestyle="--", linewidth=0.5)
-    plt.xlabel("t (en s)")
-    plt.ylabel("u (en m/s)")
-    plt.legend()
-    """
-    plt.subplot(1, 2, 2)
-    for n in range(len(ML)):
-        plt.plot(T, 1000*HL[n], label=f"M={1000 * ML[n]}g")
-    plt.title("h(t)")
-    plt.grid(True, which="both", linestyle="--", linewidth=0.5)
-    plt.xlabel("t (en s)")
-    plt.ylabel("h (en mm)")
-    plt.legend()
-
-    # plt.tight_layout()
     plt.show()

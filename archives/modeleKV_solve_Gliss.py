@@ -29,7 +29,7 @@ def modeleKV_solve(
         # Protection numérique
         R = max(R, 1e-6)
 
-        gamma_p = a * U * (R / r0) ** 2 / h0
+        gamma_p = a * U / R
         if np.isnan(gamma_p) or np.isinf(gamma_p):
             gamma_p = 0.0
 
@@ -75,7 +75,7 @@ if __name__ == "__main__":
 
     h0 = 0.005
     r0 = 0.0025
-    ML = [0.3]
+    ML = [0.05, 0.1, 0.3, 0.5]
 
     rho = 1e3
     k = 170

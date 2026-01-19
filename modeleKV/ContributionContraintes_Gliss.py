@@ -30,7 +30,7 @@ def modeleKV_solve(
         # Protection numérique
         R = max(R, 1e-6)
 
-        gamma_p = a * U * (R / r0) ** 2 / h0
+        gamma_p = a * U / R
         if np.isnan(gamma_p) or np.isinf(gamma_p):
             gamma_p = 0.0
 
@@ -58,7 +58,7 @@ def modeleKV_solve(
         Contraintes = []
 
         for Rk, Uk, Gammak in zip(R, U, Gamma):
-            gamma_p = a * Uk * (Rk / r0) ** 2 / h0
+            gamma_p = a * Uk / Rk
 
             tauVisc = k * abs(gamma_p) ** m * np.sign(gamma_p)
             tauElas = G * Gammak
