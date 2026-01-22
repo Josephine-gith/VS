@@ -138,9 +138,9 @@ if __name__ == "__main__":
 
     h0 = 0.005
     r0 = 0.0025
-    ML = [0.3]
+    ML = [0.1]
 
-    rho = 1e3
+    rho = 1.28e3
     k = 170
     G = 50
     tau0 = 62
@@ -148,10 +148,10 @@ if __name__ == "__main__":
     m = 0.45
     g = 9.81
 
-    Di = 0.2
+    Di = 0
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 600.0  # N*dt = 10s
+    t_final = 100.0  # N*dt = 10s
 
     RL = []
     RL_gliss = []
@@ -168,13 +168,25 @@ if __name__ == "__main__":
         RL_gliss.append(Rg)
 
     # Tracés
+    plt.figure()
+    plt.subplot(1, 2, 1)
     for n in range(len(ML)):
         plt.plot(T, 1000 * RL[n], label="Adhérence")
         plt.plot(T, 1000 * RL_gliss[n], label="Glissement")
-    plt.title("r(t)")
+    plt.title("R(t)")
     plt.grid(True, which="both", linestyle="--", linewidth=0.5)
     plt.xlabel("t (en s)")
     plt.ylabel("r (en mm)")
+    plt.legend()
+
+    plt.subplot(1, 2, 2)
+    for n in range(len(ML)):
+        plt.plot(T, 1000 * h0 * (r0 / RL[n]) ** 2, label="Adhérence")
+        plt.plot(T, 1000 * h0 * (r0 / RL_gliss[n]) ** 2, label="Glissement")
+    plt.title("H(t)")
+    plt.grid(True, which="both", linestyle="--", linewidth=0.5)
+    plt.xlabel("t (en s)")
+    plt.ylabel("h (en mm)")
     plt.legend()
 
     # plt.tight_layout()

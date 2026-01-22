@@ -69,8 +69,12 @@ def modeleKV_solve(
 
             tauT = tauVisc + tau0 + tauElas + tauPoids + tauComp + tauCapi + tauDi
 
+            # Contraintes.append(
+            #    np.array((tauVisc, tau0, tauElas, tauCapi, tauDi, -tauT))
+            #    / abs(tauComp + tauPoids)
+            # )
             Contraintes.append(
-                np.array((tauVisc, tau0, tauElas, tauCapi, tauDi, -tauT))
+                np.array((tauVisc, tau0, tauElas, tauCapi, -tauT))
                 / abs(tauComp + tauPoids)
             )
 
@@ -104,9 +108,9 @@ if __name__ == "__main__":
 
     h0 = 0.005
     r0 = 0.0025
-    M = 0.3
+    M = 0.4
 
-    rho = 1e3
+    rho = 1.28e3
     k = 170
     G = 50
     tau0 = 62
@@ -114,10 +118,10 @@ if __name__ == "__main__":
     m = 0.45
     g = 9.81
 
-    Di = 0.2
+    Di = 0
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 3000
+    t_final = 200
 
     T, R, C = modeleKV_solve(
         h0, r0, rho, k, Bn, M=M, G=G, sigma=sigma, m=m, g=g, Di=Di, t_final=t_final
@@ -130,7 +134,7 @@ if __name__ == "__main__":
             "Plastique",
             "Elastique",
             "Capillaire",
-            "Dissipatif",
+            # "Dissipatif",
             "Total",
         ],
     )
@@ -150,8 +154,8 @@ if __name__ == "__main__":
         plt.plot(T, df_Contraintes[col], label=col)
     plt.grid(True, which="both", linestyle="--", linewidth=0.5)
     plt.xlabel("t (en s)")
-    plt.ylabel("contrainte / contrainte de compression")
-    plt.legend()
+    plt.ylabel("contrainte / contrainte de compression+poids")
+    plt.legend(loc="upper right")
 
     # plt.tight_layout()
     plt.suptitle("Contribution de chaque contrainte")

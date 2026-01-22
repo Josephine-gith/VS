@@ -1,6 +1,7 @@
 # Résultat de simulation : étalement en dam break
 
 import pandas as pd
+import matplotlib.pyplot as plt
 
 resultats = []
 
@@ -18,3 +19,5 @@ import numpy as np
 resultats = np.array(resultats)
 
 pd.DataFrame(resultats, columns=["Time", "R_Max"]).to_csv("ResultsParaview/ResultsSim.csv", index=False)
+
+

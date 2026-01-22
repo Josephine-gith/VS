@@ -75,9 +75,9 @@ if __name__ == "__main__":
 
     h0 = 0.005
     r0 = 0.0025
-    ML = [0.3]
+    ML = [0.2]
 
-    rho = 1e3
+    rho = 1.28e3
     k = 170
     G = 50
     tau0 = 62
@@ -85,10 +85,10 @@ if __name__ == "__main__":
     m = 0.45
     g = 9.81
 
-    Di = 0.2
+    Di = 0
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 600.0  # N*dt = 10s
+    t_final = 300.0  # N*dt = 10s
 
     RL = []
     HL = []
@@ -100,7 +100,7 @@ if __name__ == "__main__":
             h0, r0, rho, k, Bn, M=M, G=G, sigma=sigma, m=m, g=g, Di=Di, t_final=t_final
         )
         RL.append(R)
-        HL.append(h0*(r0/R)**2)
+        HL.append(h0 * (r0 / R) ** 2)
         UL.append(U)
 
     # print(f"Rayon final : {R[-1]:.4f} m")
@@ -128,7 +128,7 @@ if __name__ == "__main__":
     """
     plt.subplot(1, 2, 2)
     for n in range(len(ML)):
-        plt.plot(T, 1000*HL[n], label=f"M={1000 * ML[n]}g")
+        plt.plot(T, 1000 * HL[n], label=f"M={1000 * ML[n]}g")
     plt.title("h(t)")
     plt.grid(True, which="both", linestyle="--", linewidth=0.5)
     plt.xlabel("t (en s)")
