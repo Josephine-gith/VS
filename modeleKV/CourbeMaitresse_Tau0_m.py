@@ -36,7 +36,7 @@ def modeleKV_solve(
             + G * Gamma
             - rho_h0 * g * (r0 / R) ** 2
             - M * g / (np.pi * R)
-            + sigma * r0 * (r0 / R - 1)
+            - sigma / r0 * (r0 / R - 1)
         )
 
         dRdt = U
@@ -139,9 +139,7 @@ Ga = rho * g * h0 / (rho * g * h0 - tau0 - G * r0 / h0)
 xGa = (Ga * h0 / r0) ** (1 / (2 * mL + 3))
 
 for i, m in enumerate(mL):
-    T, R, U, Gamma = modeleKV_solve(
-        h0, r0, rho, k, tau0, m=m, g=g, Di=Di
-    )
+    T, R, U, Gamma = modeleKV_solve(h0, r0, rho, k, tau0, m=m, g=g, Di=Di)
 
     uc = h0 * ((rho * g * h0 - tau0 - G * r0 / h0) / k) ** (1 / m)
     ucr = (

@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 ## Modèle de Kelvin Voigt
 
 # Temps final N*dt
-t_final = 1.
+t_final = 1.0
 dt = 1e-5  # Pas de temps, en sec
-N = int(t_final/dt)  # Nombre d'itérations
+N = int(t_final / dt)  # Nombre d'itérations
 
 Di = 0.2  # Nombre de dissipation
 
@@ -43,7 +43,7 @@ for i in range(N):
         + G * Gamma[i]
         - rho * g * h0 * (r0 / R[i]) ** 2
         - M * g / (np.pi * R[i])
-        + sigma * r0 * (r0 / R[i] - 1)
+        - sigma / r0 * (r0 / R[i] - 1)
     )
     Gamma[i + 1] = dt * gamma_p + Gamma[i]
     U[i + 1] = -dt * (R[i] / r0) ** 2 / (rho * h0) * tauT + U[i]

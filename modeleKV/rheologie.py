@@ -39,9 +39,8 @@ def modeleKV_solve(
             + G * Gamma
             - rho * g * h0 * (r0 / R) ** 2
             - M * g / (np.pi * R)
-            + sigma * r0 * (r0 / R - 1)
+            - sigma / r0 * (r0 / R - 1)
         )
-
 
         dRdt = U
         dGammadt = gamma_p
@@ -85,8 +84,8 @@ if __name__ == "__main__":
     sigma = 5e-2
     m = 0.45
     g = 9.81
-    
-    a=1
+
+    a = 1
     Di = 0.2
     Bn = tau0 / (rho * g * h0)
 
@@ -99,15 +98,15 @@ if __name__ == "__main__":
         c, T, R, U, Gamma = modeleKV_solve(
             h0, r0, rho, k, Bn, M=M, G=G, sigma=sigma, m=m, g=g, Di=Di, t_final=t_final
         )
-        GammaP = a*U*(R/r0)**2/h0
+        GammaP = a * U * (R / r0) ** 2 / h0
         GammaP_L.append(GammaP)
-        SS_L.append(k*GammaP**m + tau0+G*Gamma)
+        SS_L.append(k * GammaP**m + tau0 + G * Gamma)
 
     # Tracés
     plt.figure()
 
     for n in range(len(ML)):
-        plt.plot(GammaP_L[n], SS_L[n], label=f"M={1000*ML[n]}g")
+        plt.plot(GammaP_L[n], SS_L[n], label=f"M={1000 * ML[n]}g")
     plt.grid(True, which="both", linestyle="--", linewidth=0.5)
     plt.xlabel("Strain rate [1/s]")
     plt.ylabel("Shear stress [Pa]")

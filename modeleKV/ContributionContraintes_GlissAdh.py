@@ -41,7 +41,7 @@ def modeleKV_solve_g(
             + G * Gamma
             - rho * g * h0 * (r0 / R) ** 2
             - M * g / (np.pi * R)
-            + sigma * r0 * (r0 / R - 1)
+            + sigma / r0 * (r0 / R - 1)
         )
 
         dRdt = U
@@ -66,7 +66,7 @@ def modeleKV_solve_g(
             tauElas = G * Gammak
             tauPoids = -rho * g * h0 * (r0 / Rk) ** 2
             tauComp = -M * g / (np.pi * Rk)
-            tauCapi = sigma * r0 * (r0 / Rk - 1)
+            tauCapi = -sigma / r0 * (r0 / Rk - 1)
             tauDi = eta * gamma_p
 
             tauT = tauVisc + tau0 + tauElas + tauPoids + tauComp + tauCapi + tauDi
@@ -137,7 +137,7 @@ def modeleKV_solve(
             + G * Gamma
             - rho * g * h0 * (r0 / R) ** 2
             - M * g / (np.pi * R)
-            + sigma * (r0 / R - 1) / r0
+            - sigma * (r0 / R - 1) / r0
         )
 
         dRdt = U

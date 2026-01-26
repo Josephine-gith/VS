@@ -49,7 +49,7 @@ def r_fin(
         tauElas = G * Gamma[i]
         tauPoids = -rho * g * h0 * (r0 / R[i]) ** 2
         tauComp = -M * g / (np.pi * R[i])
-        tauCapi = sigma * r0 * (r0 / R[i] - 1)
+        tauCapi = -sigma / r0 * (r0 / R[i] - 1)
         tauDi = eta * gamma_p
         tauT = tauVisc + tau0 + tauElas + tauPoids + tauComp + tauCapi + tauDi
         Contraintes[i + 1, :] = np.array(

@@ -40,7 +40,7 @@ def modeleKV_solve(
             + G * Gamma
             - rho * g * h0 * (r0 / R) ** 2
             - M * g / (np.pi * R)
-            + sigma * (r0 / R - 1) / r0
+            - sigma * (r0 / R - 1) / r0
         )
 
         dRdt = U
@@ -105,7 +105,7 @@ def modeleKV_solve_gliss(
             + G * Gamma
             - rho * g * h0 * (r0 / R) ** 2
             - M * g / (np.pi * R)
-            + sigma * (r0 / R - 1) / r0
+            - sigma * (r0 / R - 1) / r0
         )
 
         dRdt = U

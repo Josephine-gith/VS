@@ -39,7 +39,7 @@ def modeleKV_solve(
             + G * Gamma
             - rho * g * h0 * (r0 / R) ** 2
             - M * g / (np.pi * R)
-            + sigma * r0 * (r0 / R - 1)
+            - sigma / r0 * (r0 / R - 1)
         )
 
         dRdt = U

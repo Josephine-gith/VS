@@ -31,7 +31,7 @@ def r_fin(
             + G * Gamma[i]
             - rho * g * h0 * (r0 / R[i]) ** 2
             - M * g / (np.pi * R[i])
-            + sigma * r0 * (r0 / R[i] - 1)
+            - sigma / r0 * (r0 / R[i] - 1)
         )
         Gamma[i + 1] = dt * gamma_p + Gamma[i]
         U[i + 1] = -dt * (R[i] / r0) ** 2 / (rho * h0) * tauT + U[i]
