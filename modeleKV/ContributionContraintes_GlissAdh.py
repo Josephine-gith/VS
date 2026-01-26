@@ -137,7 +137,7 @@ def modeleKV_solve(
             + G * Gamma
             - rho * g * h0 * (r0 / R) ** 2
             - M * g / (np.pi * R)
-            + sigma * r0 * (r0 / R - 1)
+            + sigma * (r0 / R - 1) / r0
         )
 
         dRdt = U
@@ -161,7 +161,7 @@ def modeleKV_solve(
             tauElas = G * Gammak
             tauPoids = -rho * g * h0 * (r0 / Rk) ** 2
             tauComp = -M * g / (np.pi * Rk)
-            tauCapi = sigma * r0 * (r0 / Rk - 1)
+            tauCapi = sigma * (r0 / Rk - 1) / r0
             tauDi = eta * gamma_p
 
             tauT = tauVisc + tau0 + tauElas + tauPoids + tauComp + tauCapi + tauDi
@@ -201,20 +201,19 @@ if __name__ == "__main__":
 
     h0 = 0.005
     r0 = 0.0025
-    M = 0.1
-
+    M = 0.01
     rho = 1.28e3
-    k = 170
-    G = 50
-    tau0 = 62
-    sigma = 5e-2
-    m = 0.45
+    k = 90
+    G = 100
+    tau0 = 15
+    sigma = 7.2e-2
+    m = 0.4
     g = 9.81
 
     Di = 0
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 200
+    t_final = 20
 
     T, R, C = modeleKV_solve(
         h0, r0, rho, k, Bn, M=M, G=G, sigma=sigma, m=m, g=g, Di=Di, t_final=t_final
@@ -230,7 +229,7 @@ if __name__ == "__main__":
             "Plastique",
             "Elastique",
             "Capillaire",
-            "Total",
+            "Inertielle",
         ],
     )
     df_Contraintes_g = pd.DataFrame(
@@ -240,7 +239,7 @@ if __name__ == "__main__":
             "Plastique",
             "Elastique",
             "Capillaire",
-            "Total",
+            "Inertielle",
         ],
     )
 

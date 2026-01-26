@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
+from matplotlib.lines import Line2D
 
 
 def modeleKV_solve(
@@ -39,7 +40,7 @@ def modeleKV_solve(
             + G * Gamma
             - rho * g * h0 * (r0 / R) ** 2
             - M * g / (np.pi * R)
-            + sigma * r0 * (r0 / R - 1)
+            + sigma * (r0 / R - 1) / r0
         )
 
         dRdt = U
@@ -104,7 +105,7 @@ def modeleKV_solve_gliss(
             + G * Gamma
             - rho * g * h0 * (r0 / R) ** 2
             - M * g / (np.pi * R)
-            + sigma * r0 * (r0 / R - 1)
+            + sigma * (r0 / R - 1) / r0
         )
 
         dRdt = U
@@ -138,20 +139,20 @@ if __name__ == "__main__":
 
     h0 = 0.005
     r0 = 0.0025
-    ML = [0.1]
+    ML = [0.05, 0.1, 0.30]
 
     rho = 1.28e3
-    k = 170
-    G = 50
-    tau0 = 62
-    sigma = 5e-2
-    m = 0.45
+    k = 90
+    G = 907
+    tau0 = 15
+    sigma = 7.2e-2
+    m = 0.4
     g = 9.81
 
     Di = 0
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 100.0  # N*dt = 10s
+    t_final = 6.0  # N*dt = 10s
 
     RL = []
     RL_gliss = []
@@ -171,23 +172,46 @@ if __name__ == "__main__":
     plt.figure()
     plt.subplot(1, 2, 1)
     for n in range(len(ML)):
-        plt.plot(T, 1000 * RL[n], label="Adhérence")
-        plt.plot(T, 1000 * RL_gliss[n], label="Glissement")
+        (line,) = plt.plot(T, 1000 * RL[n], label=f"{1000 * ML[n]}g")
+        color = line.get_color()
+
+        # Courbe avec glissement (pointillé, même couleur)
+        plt.plot(T, 1000 * RL_gliss[n], "--", color=color)
+    leg1 = plt.legend(title="Masse M", loc="lower right")
+    style_legend = [
+        Line2D([0], [0], color="black", linestyle="-", label="Sans glissement"),
+        Line2D([0], [0], color="black", linestyle="--", label="Avec glissement"),
+    ]
+
+    leg2 = plt.legend(handles=style_legend, title="Modèle", loc="lower center")
+
+    plt.gca().add_artist(leg1)
     plt.title("R(t)")
     plt.grid(True, which="both", linestyle="--", linewidth=0.5)
     plt.xlabel("t (en s)")
     plt.ylabel("r (en mm)")
-    plt.legend()
 
     plt.subplot(1, 2, 2)
     for n in range(len(ML)):
-        plt.plot(T, 1000 * h0 * (r0 / RL[n]) ** 2, label="Adhérence")
-        plt.plot(T, 1000 * h0 * (r0 / RL_gliss[n]) ** 2, label="Glissement")
+        (line,) = plt.plot(T, 1000 * h0 * (r0 / RL[n]) ** 2, label=f"{1000 * ML[n]}g")
+        color = line.get_color()
+
+        # Courbe avec glissement (pointillé, même couleur)
+        plt.plot(T, 1000 * h0 * (r0 / RL_gliss[n]) ** 2, "--", color=color)
+    leg1 = plt.legend(title="Masse M", loc="upper right")
+    style_legend = [
+        Line2D([0], [0], color="black", linestyle="-", label="Sans glissement"),
+        Line2D([0], [0], color="black", linestyle="--", label="Avec glissement"),
+    ]
+
+    leg2 = plt.legend(handles=style_legend, title="Modèle", loc="upper center")
+
+    plt.gca().add_artist(leg1)
+
     plt.title("H(t)")
     plt.grid(True, which="both", linestyle="--", linewidth=0.5)
     plt.xlabel("t (en s)")
     plt.ylabel("h (en mm)")
-    plt.legend()
 
     # plt.tight_layout()
     plt.show()

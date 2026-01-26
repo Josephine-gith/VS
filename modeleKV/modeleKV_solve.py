@@ -78,17 +78,17 @@ if __name__ == "__main__":
     ML = [0.2]
 
     rho = 1.28e3
-    k = 170
-    G = 50
-    tau0 = 62
+    k = 90
+    G = 907
+    tau0 = 15
     sigma = 5e-2
-    m = 0.45
+    m = 0.4
     g = 9.81
 
     Di = 0
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 300.0  # N*dt = 10s
+    t_final = 30.0  # N*dt = 10s
 
     RL = []
     HL = []
