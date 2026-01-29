@@ -10,7 +10,7 @@ def modeleKV_solve(
     rho,
     k,
     Bn,
-    a=1,
+    a=1.0,
     M=0.0,
     G=50.0,
     sigma=5.0e-2,
@@ -66,7 +66,9 @@ def modeleKV_solve(
     R, U, Gamma = sol.y
     T = sol.t
 
-    return T, R, U, Gamma
+    h_inf = h0 * (r0 / R[-1]) ** 2
+
+    return 1 - h_inf / h0, T, R, U, Gamma
 
 
 def modeleKV_solve_gliss(
@@ -75,7 +77,7 @@ def modeleKV_solve_gliss(
     rho,
     k,
     Bn,
-    a=1,
+    a=1.0,
     M=0.0,
     G=50.0,
     sigma=5.0e-2,
@@ -131,17 +133,19 @@ def modeleKV_solve_gliss(
     R, U, Gamma = sol.y
     T = sol.t
 
-    return T, R, U, Gamma
+    h_inf = h0 * (r0 / R[-1]) ** 2
+
+    return 1 - h_inf / h0, T, R, U, Gamma
 
 
 if __name__ == "__main__":
     # Paramètres
 
-    h0 = 0.005
-    r0 = 0.0025
-    ML = [0.05, 0.1, 0.30]
+    h0 = 0.0007
+    r0 = 0.005
+    ML = [0.020, 0.040, 0.1, 0.2]
 
-    rho = 1.28e3
+    rho = 1.27e3
     k = 90
     G = 907
     tau0 = 15
@@ -152,17 +156,17 @@ if __name__ == "__main__":
     Di = 0
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 6.0  # N*dt = 10s
+    t_final = 10.0  # N*dt = 10s
 
     RL = []
     RL_gliss = []
     T = []
 
     for n, M in enumerate(ML):
-        T, R, U, Gamma = modeleKV_solve(
+        c, T, R, U, Gamma = modeleKV_solve(
             h0, r0, rho, k, Bn, M=M, G=G, sigma=sigma, m=m, g=g, Di=Di, t_final=t_final
         )
-        T, Rg, Ug, Gamma = modeleKV_solve_gliss(
+        c, T, Rg, Ug, Gamma = modeleKV_solve_gliss(
             h0, r0, rho, k, Bn, M=M, G=G, sigma=sigma, m=m, g=g, Di=Di, t_final=t_final
         )
         RL.append(R)

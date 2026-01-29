@@ -9,7 +9,7 @@ def modeleKV_solve(
     rho,
     k,
     Bn,
-    a=1,
+    a=1.0,
     M=0.0,
     G=50.0,
     sigma=5.0e-2,
