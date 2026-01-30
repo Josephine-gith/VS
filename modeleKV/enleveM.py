@@ -17,6 +17,7 @@ def modeleKV_solve(
     g=9.81,
     Di=0.2,
     t_final=10.0,
+    t_M=10.0,
 ):
     t_eval = np.linspace(0, t_final, 1000)
     tau0 = Bn * rho * g * h0
@@ -38,9 +39,11 @@ def modeleKV_solve(
             + tau0
             + G * Gamma
             - rho * g * h0 * (r0 / R) ** 2
-            - M * g / (np.pi * R)
             - sigma / r0 * (r0 / R - 1)
         )
+
+        if t < t_M:
+            tauT += -M * g / (np.pi * R)
 
         dRdt = U
         dGammadt = gamma_p
@@ -89,6 +92,7 @@ if __name__ == "__main__":
     Bn = tau0 / (rho * g * h0)
 
     t_final = 10.0  # N*dt = 10s
+    t_M = 5.0
 
     RL = []
     HL = []
@@ -97,11 +101,41 @@ if __name__ == "__main__":
 
     for n, M in enumerate(ML):
         c, T, R, U, Gamma = modeleKV_solve(
-            h0, r0, rho, k, Bn, M=M, G=G, sigma=sigma, m=m, g=g, Di=Di, t_final=t_final
+            h0,
+            r0,
+            rho,
+            k,
+            Bn,
+            M=M,
+            G=G,
+            sigma=sigma,
+            m=m,
+            g=g,
+            Di=Di,
+            t_final=t_final,
+            t_M=t_M,
         )
-        RL.append(R)
+        
+        c, T, RM, U, Gamma = modeleKV_solve(
+            h0,
+            r0,
+            rho,
+            k,
+            Bn,
+            M=M,
+            G=G,
+            sigma=sigma,
+            m=m,
+            g=g,
+            Di=Di,
+            t_final=t_final,
+            t_M=np.inf,
+        )
+
+        RL.append((R, RM))
         HL.append(h0 * (r0 / R) ** 2)
         UL.append(U)
+
 
     # print(f"Rayon final : {R[-1]:.4f} m")
 
@@ -109,7 +143,8 @@ if __name__ == "__main__":
     plt.figure()
     plt.subplot(1, 2, 1)
     for n in range(len(ML)):
-        plt.plot(T, 1000 * RL[n], label=f"M={1000 * ML[n]}g")
+        plt.plot(T, 1000 * RL[n][0], label=f"M={1000 * ML[n]}g")
+        plt.plot(T, 1000 * RL[n][1], label=f"M={1000 * ML[n]}g")
     plt.title("r(t)")
     plt.grid(True, which="both", linestyle="--", linewidth=0.5)
     plt.xlabel("t (en s)")
