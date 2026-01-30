@@ -53,8 +53,8 @@ ag, bg = np.polyfit(xg, yg, 1)
 
 plt.plot(X1, X1, "--", label="x=y", color="red")
 
-plt.scatter(x, y, label='non-glissement, a=90')
-plt.plot(X1, a*X1+b, label=f'Réglin : y={a:.3g}x+{b:.3g}')
+plt.scatter(x, y, label="non-glissement, a=90")
+plt.plot(X1, a * X1 + b, label=f"Réglin : y={a:.3g}x+{b:.3g}")
 
 plt.scatter(xg, yg, color="green", label="glissement, a=2")
 plt.plot(X1, ag * X1 + bg, label=f"Réglin : y={ag:.3g}x+{bg:.3g}", color="green")
