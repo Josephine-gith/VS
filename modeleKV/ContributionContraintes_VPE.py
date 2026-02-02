@@ -43,6 +43,8 @@ def r_fin(
     # Itération
     for i in range(N):
         R[i + 1] = dt * U[i] + R[i]
+        R[i + 1] = max(R[i + 1], 1e-6)
+
         gamma_p = U[i] * (R[i] / r0) ** 2 / h0
 
         tauVisc = k * abs(gamma_p) ** m * np.sign(gamma_p)
@@ -54,7 +56,10 @@ def r_fin(
         tauT = tauVisc + tau0 + tauElas + tauPoids + tauComp + tauCapi + tauDi
         Contraintes[i + 1, :] = np.array(
             (tauVisc, tau0, tauElas, -tauComp, tauCapi, tauDi, -tauT)
-        ) / abs(tauPoids)
+        ) / max(abs(tauPoids), 1e-10)
+
+        if abs(tauT) < tau0:
+            gamma_p = 0.0
 
         Gamma[i + 1] = dt * gamma_p + Gamma[i]
         U[i + 1] = -dt * (R[i] / r0) ** 2 / (rho * h0) * tauT + U[i]

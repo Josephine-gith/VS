@@ -44,6 +44,9 @@ def modeleKV_solve_g(
             + sigma / r0 * (r0 / R - 1)
         )
 
+        # if abs(tauT) < tau0 :
+        #    gamma_p = 0
+
         dRdt = U
         dGammadt = gamma_p
         dUdt = -((R / r0) ** 2) / (rho * h0) * tauT

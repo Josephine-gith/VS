@@ -6,7 +6,6 @@ from modeleKV_solve_GlissAdh import modeleKV_solve, modeleKV_solve_gliss
 
 
 # Paramètres
-
 t_final = 10.0  # N*dt = 10s
 
 h0 = 0.2
@@ -18,6 +17,7 @@ G = 0
 sigma = 0
 g = 9.81
 Di = 0.2
+
 Tau0 = np.logspace(-4, 1.9, 50)
 m = 1
 
@@ -33,8 +33,8 @@ xGa = xGa = (Ga * h0 / r0) ** (1 / (2 * m + 3))
 
 
 for i, tau0 in enumerate(Tau0):
-    T, R, U, Gamma = modeleKV_solve(h0, r0, rho, k, tau0, m=m, g=g, Di=Di)
-    T, Rg, Ug, Gammag = modeleKV_solve_gliss(h0, r0, rho, k, tau0, m=m, g=g, Di=Di)
+    c, T, R, U, Gamma = modeleKV_solve(h0, r0, rho, k, tau0, m=m, g=g, Di=Di)
+    c, T, Rg, Ug, Gammag = modeleKV_solve_gliss(h0, r0, rho, k, tau0, m=m, g=g, Di=Di)
 
     uc_g = r0 * ((rho * g * h0 - tau0 - G * r0 / h0) / k) ** (1 / m)
     ucr_g = h0 * (

@@ -43,6 +43,9 @@ def modeleKV_solve(
             - sigma * (r0 / R - 1) / r0
         )
 
+        if abs(tauT) < tau0:
+            gamma_p = 0.0
+
         dRdt = U
         dGammadt = gamma_p
         dUdt = -((R / r0) ** 2) / (rho * h0) * tauT
@@ -110,6 +113,9 @@ def modeleKV_solve_gliss(
             - sigma * (r0 / R - 1) / r0
         )
 
+        if abs(tauT) < tau0:
+            gamma_p = 0.0
+
         dRdt = U
         dGammadt = gamma_p
         dUdt = -((R / r0) ** 2) / (rho * h0) * tauT
@@ -143,7 +149,7 @@ if __name__ == "__main__":
 
     h0 = 0.0007
     r0 = 0.005
-    ML = [0.020, 0.040, 0.1, 0.2]
+    ML = [0.020, 0.040, 0.1]
 
     rho = 1.27e3
     k = 90
@@ -156,7 +162,7 @@ if __name__ == "__main__":
     Di = 0
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 10.0  # N*dt = 10s
+    t_final = 1000.0  # N*dt = 10s
 
     RL = []
     RL_gliss = []
@@ -181,13 +187,13 @@ if __name__ == "__main__":
 
         # Courbe avec glissement (pointillé, même couleur)
         plt.plot(T, 1000 * RL_gliss[n], "--", color=color)
-    leg1 = plt.legend(title="Masse M", loc="lower right")
+    leg1 = plt.legend(title="Masse M", loc="upper right")
     style_legend = [
         Line2D([0], [0], color="black", linestyle="-", label="Sans glissement"),
         Line2D([0], [0], color="black", linestyle="--", label="Avec glissement"),
     ]
 
-    leg2 = plt.legend(handles=style_legend, title="Modèle", loc="lower center")
+    leg2 = plt.legend(handles=style_legend, title="Modèle", loc="upper center")
 
     plt.gca().add_artist(leg1)
     plt.title("R(t)")
