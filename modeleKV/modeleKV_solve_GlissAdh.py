@@ -162,7 +162,7 @@ if __name__ == "__main__":
     Di = 0
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 1000.0  # N*dt = 10s
+    t_final = 240.0  # N*dt = 10s
 
     RL = []
     RL_gliss = []
