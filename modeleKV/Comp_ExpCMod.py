@@ -4,11 +4,13 @@ import matplotlib.pyplot as plt
 
 from modeleKV_solve_GlissAdh import modeleKV_solve, modeleKV_solve_gliss
 
-file_path = "Experiences/Mesures kaolin.xlsx"
+file_path = "Experiences/Mesures brutes.xlsx"
 df = pd.read_excel(file_path, sheet_name="Feuil1")
 
 df["h0 [m]"] = 4e6 * df["m [kg]"] / (df["rho [kg/m3]"] * np.pi * df["D_0 [mm]"] ** 2)
 df["Bn"] = df["tau0"] / (df["rho [kg/m3]"] * df["g"] * df["h0 [m]"])
+
+ang, ag = 0.025, 0.06
 
 
 df["1-h_inf/h0"] = df.apply(
@@ -21,7 +23,7 @@ df["1-h_inf/h0"] = df.apply(
         G=r["G"],
         m=r["m"],
         M=r["M [kg]"],
-        a=90,
+        a=ang,
     )[0],
     axis=1,
 )
@@ -36,7 +38,7 @@ df["1-h_inf/h0 gliss"] = df.apply(
         G=r["G"],
         m=r["m"],
         M=r["M [kg]"],
-        a=2,
+        a=ag,
     )[0],
     axis=1,
 )
@@ -53,10 +55,10 @@ ag, bg = np.polyfit(xg, yg, 1)
 
 plt.plot(X1, X1, "--", label="x=y", color="red")
 
-plt.scatter(x, y, label="non-glissement, a=90")
+plt.scatter(x, y, label=f"non-glissement, a={ang}")
 plt.plot(X1, a * X1 + b, label=f"Réglin : y={a:.3g}x+{b:.3g}")
 
-plt.scatter(xg, yg, color="green", label="glissement, a=2")
+plt.scatter(xg, yg, color="green", label=f"glissement, a={ag}")
 plt.plot(X1, ag * X1 + bg, label=f"Réglin : y={ag:.3g}x+{bg:.3g}", color="green")
 
 plt.grid(True, which="both", linestyle="--", linewidth=0.5)
