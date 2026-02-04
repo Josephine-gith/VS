@@ -13,7 +13,7 @@ def modeleKV_solve(
     a=1.0,
     M=0.0,
     G=50.0,
-    sigma=5.0e-2,
+    sigma=7.2e-2,
     m=1.0,
     g=9.81,
     Di=0.2,
@@ -162,7 +162,7 @@ if __name__ == "__main__":
     Di = 0
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 240.0  # N*dt = 10s
+    t_final = 150.0
 
     RL = []
     RL_gliss = []

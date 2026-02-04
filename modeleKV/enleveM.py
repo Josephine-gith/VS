@@ -40,9 +40,10 @@ def modeleKV_solve(
             + G * Gamma
             - rho * g * h0 * (r0 / R) ** 2
             - sigma / r0 * (r0 / R - 1)
+            + -5e-3 * g / (np.pi * R)
         )
 
-        if t < t_M:
+        if t > t_M:
             tauT += -M * g / (np.pi * R)
 
         dRdt = U
@@ -88,11 +89,11 @@ if __name__ == "__main__":
     m = 0.4
     g = 9.81
 
-    Di = 0
+    Di = 0.1
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 10.0  # N*dt = 10s
-    t_M = 5.0
+    t_final = 100.0  # N*dt = 10s
+    t_M = 30.0
 
     RL = []
     HL = []
@@ -115,27 +116,26 @@ if __name__ == "__main__":
             t_final=t_final,
             t_M=t_M,
         )
-        
+
         c, T, RM, U, Gamma = modeleKV_solve(
             h0,
             r0,
             rho,
             k,
             Bn,
-            M=M,
+            M=M + 5e-3,
             G=G,
             sigma=sigma,
             m=m,
             g=g,
             Di=Di,
             t_final=t_final,
-            t_M=np.inf,
+            t_M=0,
         )
 
         RL.append((R, RM))
         HL.append(h0 * (r0 / R) ** 2)
         UL.append(U)
-
 
     # print(f"Rayon final : {R[-1]:.4f} m")
 

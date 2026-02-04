@@ -4,26 +4,30 @@ import matplotlib.pyplot as plt
 
 from modeleKV_solve_GlissAdh import modeleKV_solve, modeleKV_solve_gliss
 
-file_path = "Experiences/Mesures kaolin.xlsx"
+file_path = "Experiences/Mesures brutes colle.xlsx"
 df = pd.read_excel(file_path, sheet_name="Feuil1")
 
-df["h0 [m]"] = 4e6 * df["m [kg]"] / (df["rho [kg/m3]"] * np.pi * df["D_0 [mm]"] ** 2)
+df["r0 [m]"] = df["D_0 [mm]"] * 1e-3 / 2
+df["h0 [m]"] = df["m [kg]"] / (df["rho [kg/m3]"] * np.pi * df["r0 [m]"] ** 2)
 df["Bn"] = df["tau0"] / (df["rho [kg/m3]"] * df["g"] * df["h0 [m]"])
 
-a_ng, a_g = 5e6, 2e5
+a_ng, a_g = 0.4, 10
+t_final = 150  # 2 min 30
 
 
 df["1-h_inf/h0"] = df.apply(
     lambda r: modeleKV_solve(
         r["h0 [m]"],
-        r["D_0 [mm]"] * 1e-3 / 2,
+        r["r0 [m]"],
         r["rho [kg/m3]"],
         r["k"],
         r["Bn"],
         G=r["G"],
         m=r["m"],
-        M=r["M [kg]"],
+        M=r["M [kg]"]+5e-3,
         a=a_ng,
+        Di=0.1,
+        t_final=t_final,
     )[0],
     axis=1,
 )
@@ -32,14 +36,16 @@ df["1-h_inf/h0"] = df.apply(
 df["1-h_inf/h0 gliss"] = df.apply(
     lambda r: modeleKV_solve_gliss(
         r["h0 [m]"],
-        r["D_0 [mm]"] * 1e-3 / 2,
+        r["r0 [m]"],
         r["rho [kg/m3]"],
         r["k"],
         r["Bn"],
         G=r["G"],
         m=r["m"],
-        M=r["M [kg]"],
+        M=r["M [kg]"]+5e-3,
         a=a_g,
+        Di=0.1,
+        t_final=t_final,
     )[0],
     axis=1,
 )
@@ -47,7 +53,7 @@ df["1-h_inf/h0 gliss"] = df.apply(
 df["D_max KV"] = df["D_0 [mm]"] / (1 - df["1-h_inf/h0"]) ** (1 / 2)
 df["D_max KV gliss"] = df["D_0 [mm]"] / (1 - df["1-h_inf/h0 gliss"]) ** (1 / 2)
 
-X1 = np.linspace(min(df["D_max [mm]"]), max(df["D_max [mm]"]))
+X1 = np.linspace(min(df["D_max KV"]), max(df["D_max KV"]))
 x, y = df["D_max KV"], df["D_max [mm]"]
 xg, yg = df["D_max KV gliss"], df["D_max [mm]"]
 
