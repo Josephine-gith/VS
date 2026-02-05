@@ -11,7 +11,7 @@ df["r0 [m]"] = df["D_0 [mm]"] * 1e-3 / 2
 df["h0 [m]"] = df["m [kg]"] / (df["rho [kg/m3]"] * np.pi * df["r0 [m]"] ** 2)
 df["Bn"] = df["tau0"] / (df["rho [kg/m3]"] * df["g"] * df["h0 [m]"])
 
-a_ng, a_g = 0.4, 10
+a_ng, a_g = 0.4, 30
 t_final = 150  # 2 min 30
 
 
@@ -24,7 +24,7 @@ df["1-h_inf/h0"] = df.apply(
         r["Bn"],
         G=r["G"],
         m=r["m"],
-        M=r["M [kg]"]+5e-3,
+        M=r["M [kg]"] + 5e-3,
         a=a_ng,
         Di=0.1,
         t_final=t_final,
@@ -42,7 +42,7 @@ df["1-h_inf/h0 gliss"] = df.apply(
         r["Bn"],
         G=r["G"],
         m=r["m"],
-        M=r["M [kg]"]+5e-3,
+        M=r["M [kg]"] + 5e-3,
         a=a_g,
         Di=0.1,
         t_final=t_final,

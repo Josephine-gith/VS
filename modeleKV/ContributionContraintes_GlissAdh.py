@@ -44,8 +44,8 @@ def modeleKV_solve_g(
             + sigma / r0 * (r0 / R - 1)
         )
 
-        # if abs(tauT) < tau0 :
-        #    gamma_p = 0
+        if abs(tauT) < tau0:
+            gamma_p = 0
 
         dRdt = U
         dGammadt = gamma_p
@@ -143,6 +143,9 @@ def modeleKV_solve(
             - sigma * (r0 / R - 1) / r0
         )
 
+        if abs(tauT) < tau0:
+            gamma_p = 0
+
         dRdt = U
         dGammadt = gamma_p
         dUdt = -((R / r0) ** 2) / (rho * h0) * tauT
@@ -202,21 +205,21 @@ def modeleKV_solve(
 if __name__ == "__main__":
     # Paramètres
 
-    h0 = 0.005
-    r0 = 0.0025
-    M = 0.01
+    h0 = 0.0007
+    r0 = 0.005
+    M = 0.05
     rho = 1.28e3
     k = 90
-    G = 100
+    G = 907
     tau0 = 15
     sigma = 7.2e-2
     m = 0.4
     g = 9.81
 
-    Di = 0
+    Di = 0.1
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 20
+    t_final = 200
 
     T, R, C = modeleKV_solve(
         h0, r0, rho, k, Bn, M=M, G=G, sigma=sigma, m=m, g=g, Di=Di, t_final=t_final

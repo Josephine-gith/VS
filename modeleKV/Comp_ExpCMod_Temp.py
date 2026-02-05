@@ -13,6 +13,8 @@ dfM = df0[df0["matériau"] == "mayonnaise"].drop("matériau", axis="columns")
 dfC_init = dfC.iloc[[0]]
 dfM_init = dfM.iloc[[0]]
 
+# dfM_init.at[dfM_init.index[0], "rho [kg/m3]"] = 1.28e3
+
 
 r0C = dfC_init["D [mm]"].values[0] * 1e-3 / 2
 h0C = dfC_init["m [kg]"].values[0] / (
@@ -30,8 +32,10 @@ BnM = dfM_init["tau0"].values[0] / (
     dfM_init["rho [kg/m3]"].values[0] * dfM_init["g"].values[0] * h0M
 )
 
-a_ng, a_g = 0.4, 10
-t_final = dfC["t [min]"].iloc[len(dfC.index) - 1] * 60
+a_ngC, a_gC = 0.04, 0.04
+a_ngM, a_gM = 0.04, 0.04
+# t_final = dfC["t [min]"].iloc[len(dfC.index) - 1] * 60
+t_final = 1e5
 
 c, T, RC, U, Gamma = modeleKV_solve(
     h0C,
@@ -42,7 +46,7 @@ c, T, RC, U, Gamma = modeleKV_solve(
     G=dfC_init["G"].values[0],
     m=dfC_init["m"].values[0],
     M=dfC_init["M [kg]"].values[0] + 5e-3,
-    a=a_ng,
+    a=a_ngC,
     Di=0.1,
     t_final=t_final,
 )
@@ -56,7 +60,7 @@ RC_gliss = modeleKV_solve_gliss(
     G=dfC_init["G"].values[0],
     m=dfC_init["m"].values[0],
     M=dfC_init["M [kg]"].values[0] + 5e-3,
-    a=a_ng,
+    a=a_gC,
     Di=0.1,
     t_final=t_final,
 )[2]
@@ -70,7 +74,7 @@ RM = modeleKV_solve(
     G=dfM_init["G"].values[0],
     m=dfM_init["m"].values[0],
     M=dfM_init["M [kg]"].values[0] + 5e-3,
-    a=a_ng,
+    a=a_ngM,
     Di=0.1,
     t_final=t_final,
 )[2]
@@ -84,7 +88,7 @@ RM_gliss = modeleKV_solve_gliss(
     G=dfM_init["G"].values[0],
     m=dfM_init["m"].values[0],
     M=dfM_init["M [kg]"].values[0] + 5e-3,
-    a=a_ng,
+    a=a_gM,
     Di=0.1,
     t_final=t_final,
 )[2]
