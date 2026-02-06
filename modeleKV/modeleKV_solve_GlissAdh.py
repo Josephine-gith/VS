@@ -147,8 +147,9 @@ def modeleKV_solve_gliss(
 if __name__ == "__main__":
     # Paramètres
 
-    h0 = 0.0007
+    mg = 50e-6
     r0 = 0.005
+    
     ML = [0.020, 0.040, 0.1]
 
     rho = 1.27e3
@@ -160,9 +161,10 @@ if __name__ == "__main__":
     g = 9.81
 
     Di = 0
+    h0 = mg / (rho * np.pi * r0**2)
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 150.0
+    t_final = 10000000.0
 
     RL = []
     RL_gliss = []

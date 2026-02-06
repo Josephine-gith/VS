@@ -145,6 +145,12 @@ def modeleKV_solve(
 
         if abs(tauT) < tau0:
             gamma_p = 0
+            tauT = (
+                tau0
+                - rho * g * h0 * (r0 / R) ** 2
+                - M * g / (np.pi * R)
+                - sigma * (r0 / R - 1) / r0
+            )
 
         dRdt = U
         dGammadt = gamma_p
@@ -219,14 +225,14 @@ if __name__ == "__main__":
     Di = 0.1
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 200
+    t_final = 10000000
 
     T, R, C = modeleKV_solve(
         h0, r0, rho, k, Bn, M=M, G=G, sigma=sigma, m=m, g=g, Di=Di, t_final=t_final
     )
-    Tg, Rg, Cg = modeleKV_solve_g(
-        h0, r0, rho, k, Bn, M=M, G=G, sigma=sigma, m=m, g=g, Di=Di, t_final=t_final
-    )
+    # Tg, Rg, Cg = modeleKV_solve_g(
+    #    h0, r0, rho, k, Bn, M=M, G=G, sigma=sigma, m=m, g=g, Di=Di, t_final=t_final
+    # )
 
     df_Contraintes = pd.DataFrame(
         C,
@@ -238,7 +244,7 @@ if __name__ == "__main__":
             "Inertielle",
         ],
     )
-    df_Contraintes_g = pd.DataFrame(
+    """df_Contraintes_g = pd.DataFrame(
         Cg,
         columns=[
             "Visqueuse",
@@ -247,7 +253,7 @@ if __name__ == "__main__":
             "Capillaire",
             "Inertielle",
         ],
-    )
+    )"""
 
     # Tracés
 
@@ -257,7 +263,7 @@ if __name__ == "__main__":
         color = line.get_color()
 
         # Courbe avec glissement (pointillé, même couleur)
-        plt.plot(T, df_Contraintes_g[col], "--", color=color)
+        # plt.plot(T, df_Contraintes_g[col], "--", color=color)
     leg1 = plt.legend(title="Type de contrainte", loc="upper right")
     style_legend = [
         Line2D([0], [0], color="black", linestyle="-", label="Sans glissement"),

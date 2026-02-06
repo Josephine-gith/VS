@@ -4,15 +4,19 @@ import matplotlib.pyplot as plt
 
 from modeleKV_solve_GlissAdh import modeleKV_solve, modeleKV_solve_gliss
 
-file_path = "Experiences/Mesures brutes colle.xlsx"
+file_path = "Experiences/Mesures mayonnaise.xlsx"
 df = pd.read_excel(file_path, sheet_name="Feuil1")
+
+# Pour n'avoir que la série 2 de mayonnaise (30min d'étalement) :
+# df = df[df["m [kg]"].isin([0.000055, 0.000029967])]
+
 
 df["r0 [m]"] = df["D_0 [mm]"] * 1e-3 / 2
 df["h0 [m]"] = df["m [kg]"] / (df["rho [kg/m3]"] * np.pi * df["r0 [m]"] ** 2)
 df["Bn"] = df["tau0"] / (df["rho [kg/m3]"] * df["g"] * df["h0 [m]"])
 
-a_ng, a_g = 0.4, 30
-t_final = 150  # 2 min 30
+a_ng, a_g = 1, 1
+t_final = 1000000000000
 
 
 df["1-h_inf/h0"] = df.apply(
@@ -72,4 +76,5 @@ plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 plt.xlabel("D max modèle [mm]")
 plt.ylabel("D max expérimental [mm]")
 plt.legend()
+plt.title(file_path)
 plt.show()
