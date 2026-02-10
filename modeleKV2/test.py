@@ -17,7 +17,6 @@ def modeleKV_solve(
     g=9.81,
     Di=0.2,
     t_final=10.0,
-    t_M=10.0,
 ):
     t_eval = np.linspace(0, t_final, 1000)
     tau0 = Bn * rho * g * h0
@@ -39,16 +38,16 @@ def modeleKV_solve(
             + tau0
             + G * Gamma
             - rho * g * h0 * (r0 / R) ** 2
+            - M * g / (np.pi * R)
             - sigma / r0 * (r0 / R - 1)
-            + -5e-3 * g / (np.pi * R)
         )
 
-        if t > t_M:
-            tauT += -M * g / (np.pi * R)
+        if tauT < tau0:
+            gamma_p = 0.0
 
         dRdt = U
         dGammadt = gamma_p
-        dUdt = -((R / r0) ** 2) / (rho * h0) * tauT
+        dUdt = -2 * R**6 * tauT / rho + 3 * U / R
 
         return [dRdt, dUdt, dGammadt]
 
@@ -79,7 +78,7 @@ if __name__ == "__main__":
 
     h0 = 0.005
     r0 = 0.0025
-    ML = [0.02, 0.05, 0.1]
+    ML = [2]
 
     rho = 1.28e3
     k = 90
@@ -89,11 +88,10 @@ if __name__ == "__main__":
     m = 0.4
     g = 9.81
 
-    Di = 0.1
+    Di = 0
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 100.0  # N*dt = 10s
-    t_M = 30.0
+    t_final = 1e20
 
     RL = []
     HL = []
@@ -102,38 +100,9 @@ if __name__ == "__main__":
 
     for n, M in enumerate(ML):
         c, T, R, U, Gamma = modeleKV_solve(
-            h0,
-            r0,
-            rho,
-            k,
-            Bn,
-            M=M,
-            G=G,
-            sigma=sigma,
-            m=m,
-            g=g,
-            Di=Di,
-            t_final=t_final,
-            t_M=t_M,
+            h0, r0, rho, k, Bn, M=M, G=G, sigma=sigma, m=m, g=g, Di=Di, t_final=t_final
         )
-
-        c, T, RM, U, Gamma = modeleKV_solve(
-            h0,
-            r0,
-            rho,
-            k,
-            Bn,
-            M=M + 5e-3,
-            G=G,
-            sigma=sigma,
-            m=m,
-            g=g,
-            Di=Di,
-            t_final=t_final,
-            t_M=0,
-        )
-
-        RL.append((R, RM))
+        RL.append(R)
         HL.append(h0 * (r0 / R) ** 2)
         UL.append(U)
 
@@ -143,24 +112,13 @@ if __name__ == "__main__":
     plt.figure()
     plt.subplot(1, 2, 1)
     for n in range(len(ML)):
-        plt.plot(T, 1000 * RL[n][0], label=f"M={1000 * ML[n]}g")
-        plt.plot(T, 1000 * RL[n][1], label=f"M={1000 * ML[n]}g")
+        plt.plot(T, 1000 * RL[n], label=f"M={1000 * ML[n]}g")
     plt.title("r(t)")
     plt.grid(True, which="both", linestyle="--", linewidth=0.5)
     plt.xlabel("t (en s)")
     plt.ylabel("r (en mm)")
     plt.legend()
 
-    """
-    plt.subplot(1, 2, 2)
-    for n in range(len(ML)):
-        plt.plot(T, UL[n], label=f"M={1000 * ML[n]}g")
-    plt.title("u(t)")
-    plt.grid(True, which="both", linestyle="--", linewidth=0.5)
-    plt.xlabel("t (en s)")
-    plt.ylabel("u (en m/s)")
-    plt.legend()
-    """
     plt.subplot(1, 2, 2)
     for n in range(len(ML)):
         plt.plot(T, 1000 * HL[n], label=f"M={1000 * ML[n]}g")
