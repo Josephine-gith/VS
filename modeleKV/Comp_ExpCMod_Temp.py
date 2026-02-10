@@ -10,6 +10,7 @@ df0 = pd.read_excel(file_path, sheet_name="Feuil1")
 dfC = df0[df0["matériau"] == "colle"].drop("matériau", axis="columns")
 dfM = df0[df0["matériau"] == "mayonnaise"].drop("matériau", axis="columns")
 
+
 dfC_init = dfC.iloc[[0]]
 dfM_init = dfM.iloc[[0]]
 
@@ -32,10 +33,10 @@ BnM = dfM_init["tau0"].values[0] / (
     dfM_init["rho [kg/m3]"].values[0] * dfM_init["g"].values[0] * h0M
 )
 
-a_ngC, a_gC = 0.04, 0.04
+a_ngC, a_gC = 0.5,0.5
 a_ngM, a_gM = 0.04, 0.04
 # t_final = dfC["t [min]"].iloc[len(dfC.index) - 1] * 60
-t_final = 1e5
+t_final = 1e6
 
 c, T, RC, U, Gamma = modeleKV_solve(
     h0C,
@@ -92,6 +93,7 @@ RM_gliss = modeleKV_solve_gliss(
     Di=0.1,
     t_final=t_final,
 )[2]
+
 
 plt.scatter(dfC["t [min]"], dfC["D [mm]"], label="Expérience colle", color="red")
 plt.plot(T / 60, 2e3 * RC, label="Modèle colle", color="red")

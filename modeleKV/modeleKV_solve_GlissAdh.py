@@ -46,6 +46,18 @@ def modeleKV_solve(
         if abs(tauT) < tau0:
             gamma_p = 0.0
 
+        """if abs(- rho * g * h0 * (r0 / R) ** 2 - M * g / (np.pi * R)) > tau0:
+            tauT = (
+                (k + eta) * np.abs(gamma_p) ** m * np.sign(gamma_p)
+                + tau0
+                + G * Gamma
+                - rho * g * h0 * (r0 / R) ** 2
+                - M * g / (np.pi * R)
+                - sigma * (r0 / R - 1) / r0
+            )
+        else : 
+            tauT = tau0"""
+
         dRdt = U
         dGammadt = gamma_p
         dUdt = -((R / r0) ** 2) / (rho * h0) * tauT
@@ -147,10 +159,10 @@ def modeleKV_solve_gliss(
 if __name__ == "__main__":
     # Paramètres
 
-    mg = 50e-6
+    mg = 95e-6
     r0 = 0.005
 
-    ML = [0.020, 0.040, 0.1]
+    ML = [0.020, 0.050, 0.1]
 
     rho = 1.27e3
     k = 90
@@ -164,7 +176,7 @@ if __name__ == "__main__":
     h0 = mg / (rho * np.pi * r0**2)
     Bn = tau0 / (rho * g * h0)
 
-    t_final = 10000000.0
+    t_final = 100000.0
 
     RL = []
     RL_gliss = []

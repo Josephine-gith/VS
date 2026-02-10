@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 from modeleKV_solve_GlissAdh import modeleKV_solve, modeleKV_solve_gliss
 
-file_path = "Experiences/Mesures mayonnaise.xlsx"
+file_path = "Experiences/Mesures brutes colle 2.xlsx"
 df = pd.read_excel(file_path, sheet_name="Feuil1")
 
 # Pour n'avoir que la série 2 de mayonnaise (30min d'étalement) :
@@ -76,5 +76,5 @@ plt.grid(True, which="both", linestyle="--", linewidth=0.5)
 plt.xlabel("D max modèle [mm]")
 plt.ylabel("D max expérimental [mm]")
 plt.legend()
-plt.title(file_path)
+plt.title("Mesures : " + file_path + f" et t_final = {t_final:.2g}")
 plt.show()
