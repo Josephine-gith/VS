@@ -33,12 +33,13 @@ BnM = dfM_init["tau0"].values[0] / (
     dfM_init["rho [kg/m3]"].values[0] * dfM_init["g"].values[0] * h0M
 )
 
-a_ngC, a_gC = 0.5, 0.5
-a_ngM, a_gM = 0.04, 0.04
-# t_final = dfC["t [min]"].iloc[len(dfC.index) - 1] * 60
-t_final = 1e5
+a_ngC, a_gC = 6,5
+a_ngM, a_gM = 5,5
 
-c, T, RC, U, Gamma = modeleKV_solve_h(
+t_final = dfC["t [min]"].iloc[len(dfC.index) - 1] * 60
+# t_final = 1e5
+
+c, TC, RC, U, Gamma = modeleKV_solve_h(
     h0C,
     r0C,
     dfC_init["rho [kg/m3]"].values[0],
@@ -52,7 +53,8 @@ c, T, RC, U, Gamma = modeleKV_solve_h(
     t_final=t_final,
 )
 
-RC_gliss = modeleKV_solve_h(
+"""
+c, TCg, RC_gliss, U, Gamma = modeleKV_solve_h(
     h0C,
     r0C,
     dfC_init["rho [kg/m3]"].values[0],
@@ -65,9 +67,9 @@ RC_gliss = modeleKV_solve_h(
     Di=0.1,
     t_final=t_final,
     glissement=True,
-)[2]
+)
 
-RM = modeleKV_solve_h(
+c, TM, RM, U, Gamma = modeleKV_solve_h(
     h0M,
     r0M,
     dfM_init["rho [kg/m3]"].values[0],
@@ -79,9 +81,9 @@ RM = modeleKV_solve_h(
     a=a_ngM,
     Di=0.1,
     t_final=t_final,
-)[2]
+)"""
 
-RM_gliss = modeleKV_solve_h(
+c, TMg, RM_gliss, U, Gamma = modeleKV_solve_h(
     h0M,
     r0M,
     dfM_init["rho [kg/m3]"].values[0],
@@ -94,20 +96,21 @@ RM_gliss = modeleKV_solve_h(
     Di=0.1,
     t_final=t_final,
     glissement=True,
-)[2]
+)
 
 
-plt.scatter(dfC["t [min]"], dfC["D [mm]"], label="Expérience colle", color="red")
-plt.plot(T / 60, 2e3 * RC, label="Modèle colle", color="red")
-plt.plot(T / 60, 2e3 * RC_gliss, "--", label="Modèle glissant colle", color="red")
+plt.scatter(dfC["t [min]"]/60, dfC["D [mm]"], label="Expérience colle", color="red")
+plt.plot(TC / 3600, 2e3 * RC, label="Modèle colle", color="red")
+# plt.plot(TCg / 60, 2e3 * RC_gliss, "--", label="Modèle glissant colle", color="red")
 
-plt.scatter(dfM["t [min]"], dfM["D [mm]"], label="Expérience mayo", color="blue")
-plt.plot(T / 60, 2e3 * RM, label="Modèle mayo", color="blue")
-plt.plot(T / 60, 2e3 * RM_gliss, "--", label="Modèle glissant mayo", color="blue")
+plt.scatter(dfM["t [min]"]/60, dfM["D [mm]"], label="Expérience mayo", color="blue")
+# plt.plot(TM / 60, 2e3 * RM, label="Modèle mayo", color="blue")
+plt.plot(TMg / 3600, 2e3 * RM_gliss, "--", label="Modèle glissant mayo", color="blue")
 
 
 plt.grid(True, which="both", linestyle="--", linewidth=0.5)
-plt.xlabel("t [min]")
+plt.xlabel("t [h]")
 plt.ylabel("D [mm]")
+plt.title("Etalement de la colle et de la mayonnaise")
 plt.legend()
 plt.show()

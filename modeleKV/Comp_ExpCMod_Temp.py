@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from modeleKV_solve_GlissAdh import modeleKV_solve, modeleKV_solve_gliss
+from modeleKV_solve_GlissAdh import modeleKV_solve
 
 file_path = "Experiences/Mesures temporelles.xlsx"
 df0 = pd.read_excel(file_path, sheet_name="Feuil1")
@@ -33,12 +33,13 @@ BnM = dfM_init["tau0"].values[0] / (
     dfM_init["rho [kg/m3]"].values[0] * dfM_init["g"].values[0] * h0M
 )
 
-a_ngC, a_gC = 0.5,0.5
-a_ngM, a_gM = 0.04, 0.04
+a_ngC, a_gC = 1, 5
+a_ngM, a_gM = 0.05, 0.4
+Di = 0.1
 # t_final = dfC["t [min]"].iloc[len(dfC.index) - 1] * 60
-t_final = 1e6
+t_final = 1e5
 
-c, T, RC, U, Gamma = modeleKV_solve(
+c, TC, RC, U, Gamma = modeleKV_solve(
     h0C,
     r0C,
     dfC_init["rho [kg/m3]"].values[0],
@@ -48,11 +49,11 @@ c, T, RC, U, Gamma = modeleKV_solve(
     m=dfC_init["m"].values[0],
     M=dfC_init["M [kg]"].values[0] + 5e-3,
     a=a_ngC,
-    Di=0.1,
+    Di=Di,
     t_final=t_final,
 )
 
-RC_gliss = modeleKV_solve_gliss(
+c, TCg, RC_gliss, U, Gamma = modeleKV_solve(
     h0C,
     r0C,
     dfC_init["rho [kg/m3]"].values[0],
@@ -62,11 +63,12 @@ RC_gliss = modeleKV_solve_gliss(
     m=dfC_init["m"].values[0],
     M=dfC_init["M [kg]"].values[0] + 5e-3,
     a=a_gC,
-    Di=0.1,
+    Di=Di,
     t_final=t_final,
-)[2]
+    glissement=True,
+)
 
-RM = modeleKV_solve(
+c, TM, RM, U, Gamma = modeleKV_solve(
     h0M,
     r0M,
     dfM_init["rho [kg/m3]"].values[0],
@@ -76,11 +78,11 @@ RM = modeleKV_solve(
     m=dfM_init["m"].values[0],
     M=dfM_init["M [kg]"].values[0] + 5e-3,
     a=a_ngM,
-    Di=0.1,
+    Di=Di,
     t_final=t_final,
-)[2]
+)
 
-RM_gliss = modeleKV_solve_gliss(
+c, TMg, RM_gliss, U, Gamma = modeleKV_solve(
     h0M,
     r0M,
     dfM_init["rho [kg/m3]"].values[0],
@@ -90,18 +92,19 @@ RM_gliss = modeleKV_solve_gliss(
     m=dfM_init["m"].values[0],
     M=dfM_init["M [kg]"].values[0] + 5e-3,
     a=a_gM,
-    Di=0.1,
+    Di=Di,
     t_final=t_final,
-)[2]
+    glissement=True,
+)
 
 
 plt.scatter(dfC["t [min]"], dfC["D [mm]"], label="Expérience colle", color="red")
-plt.plot(T / 60, 2e3 * RC, label="Modèle colle", color="red")
-plt.plot(T / 60, 2e3 * RC_gliss, "--", label="Modèle glissant colle", color="red")
+plt.plot(TC / 60, 2e3 * RC, label="Modèle colle", color="red")
+plt.plot(TCg / 60, 2e3 * RC_gliss, "--", label="Modèle glissant colle", color="red")
 
 plt.scatter(dfM["t [min]"], dfM["D [mm]"], label="Expérience mayo", color="blue")
-plt.plot(T / 60, 2e3 * RM, label="Modèle mayo", color="blue")
-plt.plot(T / 60, 2e3 * RM_gliss, "--", label="Modèle glissant mayo", color="blue")
+plt.plot(TM / 60, 2e3 * RM, label="Modèle mayo", color="blue")
+plt.plot(TMg / 60, 2e3 * RM_gliss, "--", label="Modèle glissant mayo", color="blue")
 
 
 plt.grid(True, which="both", linestyle="--", linewidth=0.5)
